@@ -58,9 +58,10 @@
     .naver-map-style-control{position:absolute;z-index:500;left:0;bottom:0}
     .edit-tools-stack{position:absolute;z-index:560;right:10px;top:10px;width:min(286px,calc(100% - 20px));display:flex;flex-direction:column;gap:8px;align-items:stretch}.edit-lock{display:grid;grid-template-columns:1fr auto;gap:6px;padding:7px;background:rgba(255,255,255,.97);border:1px solid #d5deea;border-radius:11px;box-shadow:0 5px 18px rgba(20,38,65,.16)}.edit-lock input{min-width:0;height:30px;border:1px solid #cbd6e4;border-radius:7px;padding:4px 8px;font-size:.7rem;outline:none}.edit-lock input:focus{border-color:#1677d2;box-shadow:0 0 0 2px rgba(22,119,210,.12)}.edit-lock button{height:30px;border:0;border-radius:7px;background:#203a60;color:#fff;padding:0 10px;font-size:.68rem;font-weight:800}.edit-lock-status{grid-column:1/-1;min-height:13px;color:#627086;font-size:.61rem;line-height:1.25}.edit-lock-status.error{color:#c43139}.edit-lock-status.unlocked{color:#16703b;font-weight:750}.edit-tools-panel{width:100%;background:rgba(255,255,255,.97);border:1px solid #d5deea;border-radius:13px;box-shadow:0 7px 24px rgba(20,38,65,.2);overflow:hidden}.edit-tools-toggle{width:100%;min-height:40px;border:0;background:#152640;color:#fff;padding:10px 12px;font-size:.8rem;font-weight:800;text-align:left;display:flex;align-items:center;justify-content:space-between}.edit-tools-toggle::after{content:'＋';font-size:1rem}.edit-tools-panel.open>.edit-tools-toggle::after{content:'−'}.edit-tools-toggle:disabled{opacity:.58;cursor:not-allowed}.edit-tools-body{display:none;padding:8px;background:#f2f5f9}.edit-tools-panel.open>.edit-tools-body{display:flex;flex-direction:column;gap:8px}.correction-panel{position:relative;width:100%;background:rgba(255,255,255,.97);border:1px solid #d5deea;border-radius:10px;overflow:hidden}
     .correction-toggle{width:100%;min-height:40px;border:0;background:#203a60;color:#fff;padding:10px 12px;font-size:.8rem;font-weight:800;text-align:left;display:flex;align-items:center;justify-content:space-between}.correction-toggle::after{content:'＋';font-size:1rem}.correction-panel.open .correction-toggle::after{content:'−'}.correction-toggle:disabled,.shape-editor-toggle:disabled{opacity:.58;cursor:not-allowed}
-    .correction-body{display:none;padding:10px}.correction-panel.open .correction-body{display:block}.correction-help{margin:0 0 8px;color:#526178;font-size:.7rem;line-height:1.45}.correction-status{padding:7px 8px;border-radius:8px;background:#eef3f9;color:#33455e;font-size:.7rem;font-weight:700;line-height:1.4;margin-bottom:8px}.correction-status.active{background:#fff1d6;color:#694900}
+    .correction-body{display:none;padding:10px;max-height:min(62vh,560px);overflow-y:auto;overscroll-behavior:contain}.correction-panel.open .correction-body{display:block}.correction-help{margin:0 0 8px;color:#526178;font-size:.7rem;line-height:1.45}.correction-status{padding:7px 8px;border-radius:8px;background:#eef3f9;color:#33455e;font-size:.7rem;font-weight:700;line-height:1.4;margin-bottom:8px}.correction-status.active{background:#fff1d6;color:#694900}
     .correction-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px}.correction-actions button{min-height:34px;border:1px solid #cbd6e4;border-radius:8px;background:#fff;color:#263a56;font-size:.7rem;font-weight:750;padding:6px}.correction-actions button.primary{grid-column:1/-1;background:#e33b42;color:#fff;border-color:#e33b42}.correction-actions button:disabled{opacity:.42;cursor:not-allowed}.correction-count{margin-top:7px;color:#627086;font-size:.68rem;text-align:right}
     .coordinate-editor{margin:0 0 8px;padding:8px;border:1px solid #d7e0eb;border-radius:9px;background:#f8fafc}.coordinate-selected{font-size:.69rem;font-weight:800;color:#263a56;line-height:1.4;margin-bottom:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.coordinate-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}.coordinate-grid label{font-size:.64rem;color:#627086}.coordinate-grid input{width:100%;margin-top:3px;border:1px solid #cbd6e4;border-radius:7px;background:#fff;padding:7px 6px;font-size:.7rem;color:#172033;outline:none}.coordinate-grid input:focus{border-color:#1677d2;box-shadow:0 0 0 2px rgba(22,119,210,.12)}.coordinate-apply{width:100%;margin-top:6px;min-height:32px;border:0;border-radius:7px;background:#1677d2;color:#fff;font-size:.7rem;font-weight:800}.coordinate-apply:disabled,.coordinate-grid input:disabled{opacity:.45;cursor:not-allowed}.coordinate-error{min-height:14px;margin-top:4px;color:#c43139;font-size:.62rem;line-height:1.3}
+    .facility-adder{margin:0 0 8px;padding:8px;border:1px solid #d7e0eb;border-radius:9px;background:#f8fafc}.facility-adder-title{margin-bottom:7px;color:#263a56;font-size:.69rem;font-weight:800}.facility-adder-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}.facility-adder-grid label{font-size:.64rem;color:#627086}.facility-adder-grid input,.facility-adder-grid select{width:100%;height:31px;margin-top:3px;border:1px solid #cbd6e4;border-radius:7px;background:#fff;padding:5px 6px;font-size:.68rem;color:#172033}.facility-adder-actions{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:6px}.facility-adder-actions button{min-height:32px;border:1px solid #bfcddd;border-radius:7px;background:#fff;color:#263a56;font-size:.68rem;font-weight:800}.facility-adder-actions .add{background:#1677d2;border-color:#1677d2;color:#fff}.facility-adder-status{min-height:14px;margin-top:4px;color:#627086;font-size:.62rem;line-height:1.3}.facility-adder-status.error{color:#c43139}
     .facility-marker.editing{cursor:grab;animation:editPulse 1.35s ease-in-out infinite}.facility-marker.editing:active{cursor:grabbing}@keyframes editPulse{0%,100%{filter:drop-shadow(0 0 0 rgba(255,204,0,0))}50%{filter:drop-shadow(0 0 5px rgba(255,177,0,.95))}}
     .detail{position:absolute;z-index:700;left:50%;bottom:18px;transform:translate(-50%,calc(100% + 40px));opacity:0;width:min(620px,calc(100% - 28px));background:#fff;border-radius:18px;box-shadow:var(--shadow);transition:.25s ease;padding:18px;pointer-events:none}
     .detail.open{transform:translate(-50%,0);opacity:1;pointer-events:auto}
@@ -118,6 +119,17 @@
             </div>
             <button class="coordinate-apply" id="coordinateApplyBtn" type="button" disabled>입력 좌표 적용</button>
             <div class="coordinate-error" id="coordinateError" role="alert"></div>
+          </div>
+          <div class="facility-adder">
+            <div class="facility-adder-title">소방시설 마커 추가</div>
+            <div class="facility-adder-grid">
+              <label>시설 종류<select id="newFacilityType"><option value="receiver">수신반</option><option value="siamese">연결송수관</option></select></label>
+              <label>시설 명칭<input id="newFacilityLabel" placeholder="예: 101동 수신반"></label>
+              <label>위도<input id="newFacilityLat" inputmode="decimal" placeholder="37.00000000"></label>
+              <label>경도<input id="newFacilityLng" inputmode="decimal" placeholder="127.00000000"></label>
+            </div>
+            <div class="facility-adder-actions"><button id="pickFacilityCoordinateBtn" type="button">좌표 선택</button><button class="add" id="addFacilityBtn" type="button">시설 추가</button></div>
+            <div class="facility-adder-status" id="facilityAdderStatus" role="status">추가할 단지를 먼저 선택해 주세요.</div>
           </div>
           <div class="correction-actions">
             <button class="primary" id="correctionModeBtn" type="button">좌표 보정 시작</button>
@@ -254,9 +266,12 @@
     let facilityCanvasEventsBound = false;
     const correctionHistory = [];
     const correctionStorageKey = 'guriFireMapMarkerCorrectionsV3';
+    const addedFacilityStorageKey = 'guriFireMapAddedFacilitiesV1';
     let correctionSaveError = false;
     let savedCorrections = {};
+    let addedFacilities = [];
     try{savedCorrections=JSON.parse(localStorage.getItem(correctionStorageKey)||'{}')||{}}catch(e){savedCorrections={}}
+    try{const stored=JSON.parse(localStorage.getItem(addedFacilityStorageKey)||'[]');addedFacilities=Array.isArray(stored)?stored:[]}catch(e){addedFacilities=[]}
 
     function selectedFacilityGeoJSON(){
       const apt=apartments.find(item=>item.id===selectedApartment);
@@ -288,8 +303,9 @@
       if(!map.hasImage('facility-siamese-fixed'))map.addImage('facility-siamese-fixed',createSiameseCanvasImage(),{pixelRatio:1});
       if(!map.hasImage('facility-receiver-fixed'))map.addImage('facility-receiver-fixed',createReceiverCanvasImage(),{pixelRatio:1});
       if(!map.getSource('selected-facilities'))map.addSource('selected-facilities',{type:'geojson',data:selectedFacilityGeoJSON()});
-      if(!map.getLayer('facility-receiver-fixed'))map.addLayer({id:'facility-receiver-fixed',type:'symbol',source:'selected-facilities',filter:['==',['get','type'],'receiver'],layout:{'icon-image':'facility-receiver-fixed','icon-size':1,'icon-anchor':'center','icon-allow-overlap':true,'icon-ignore-placement':true}});
-      if(!map.getLayer('facility-siamese-fixed'))map.addLayer({id:'facility-siamese-fixed',type:'symbol',source:'selected-facilities',filter:['==',['get','type'],'siamese'],layout:{'icon-image':'facility-siamese-fixed','icon-size':1,'icon-anchor':'center','icon-allow-overlap':true,'icon-ignore-placement':true}});
+      const zoomSize=['interpolate',['exponential',1.8],['zoom'],12,.2,15,.45,18,1];
+      if(!map.getLayer('facility-receiver-fixed'))map.addLayer({id:'facility-receiver-fixed',type:'symbol',source:'selected-facilities',filter:['==',['get','type'],'receiver'],layout:{'icon-image':'facility-receiver-fixed','icon-size':zoomSize,'icon-anchor':'center','icon-allow-overlap':true,'icon-ignore-placement':true}});
+      if(!map.getLayer('facility-siamese-fixed'))map.addLayer({id:'facility-siamese-fixed',type:'symbol',source:'selected-facilities',filter:['==',['get','type'],'siamese'],layout:{'icon-image':'facility-siamese-fixed','icon-size':zoomSize,'icon-anchor':'center','icon-allow-overlap':true,'icon-ignore-placement':true}});
       bindFacilityCanvasEvents();
       refreshFacilityCanvas();
     }
@@ -316,6 +332,7 @@
     }
 
     function getMapZoom(){return map.getZoom()}
+    function facilityMarkerScale(){const zoom=getMapZoom();if(zoom<=12)return .2;if(zoom>=18)return 1;return .2*Math.pow(5,(zoom-12)/6)}
     function addHtmlMarker(element,lng,lat,onClick){
       const isDongMarker=element.classList.contains('dong-marker');
       const isSiameseMarker=element.classList.contains('siamese');
@@ -327,7 +344,7 @@
         const contentElement=element.cloneNode(true);contentElement.classList.remove('hidden');
         const marker=new naver.maps.Marker({map,position:new naver.maps.LatLng(lat,lng),zIndex:550,icon:{content:contentElement.outerHTML,anchor:new naver.maps.Point(anchorX,anchorY)}});
         if(onClick)naver.maps.Event.addListener(marker,'click',onClick);
-        return {remove:()=>marker.setMap(null),setVisible:value=>marker.setVisible(value),setDraggable:value=>marker.setDraggable(value),getLngLat:()=>{const p=marker.getPosition();return{lng:p.lng(),lat:p.lat()}},setLngLat:(lng2,lat2)=>marker.setPosition(new naver.maps.LatLng(lat2,lng2)),onDragEnd:fn=>naver.maps.Event.addListener(marker,'dragend',fn),raw:marker};
+        return {remove:()=>marker.setMap(null),setVisible:value=>marker.setVisible(value),setScale:value=>{contentElement.style.scale=String(value);marker.setIcon({content:contentElement.outerHTML,anchor:new naver.maps.Point(anchorX,anchorY)})},setDraggable:value=>marker.setDraggable(value),getLngLat:()=>{const p=marker.getPosition();return{lng:p.lng(),lat:p.lat()}},setLngLat:(lng2,lat2)=>marker.setPosition(new naver.maps.LatLng(lat2,lng2)),onDragEnd:fn=>naver.maps.Event.addListener(marker,'dragend',fn),raw:marker};
       }
       element.style.zIndex='550';const marker=new maplibregl.Marker({element,anchor:'center',offset:isSiameseMarker?[0,-3]:[0,0]}).setLngLat([lng,lat]).addTo(map);marker.getElement().style.zIndex='550';
       if(typeof marker.setSubpixelPositioning==='function')marker.setSubpixelPositioning(true);
@@ -358,7 +375,7 @@
         if(drag.moved&&!frame)frame=requestAnimationFrame(flush);
       });
       ['pointerup','pointercancel','lostpointercapture'].forEach(type=>element.addEventListener(type,e=>{if(drag&&e.pointerId===drag.pointerId){e.stopPropagation();finish()}}));
-      return {remove:()=>{finish();marker.remove()},setVisible:value=>element.classList.toggle('hidden',!value),setDraggable:value=>{if(!value)finish();draggable=value;marker.setDraggable(false)},getLngLat:()=>marker.getLngLat(),setLngLat:(lng2,lat2)=>marker.setLngLat([lng2,lat2]),onDragEnd:fn=>{dragEnd=fn},finishDrag:finish,raw:marker};
+      return {remove:()=>{finish();marker.remove()},setVisible:value=>element.classList.toggle('hidden',!value),setScale:value=>{element.style.scale=String(value)},setDraggable:value=>{if(!value)finish();draggable=value;marker.setDraggable(false)},getLngLat:()=>marker.getLngLat(),setLngLat:(lng2,lat2)=>marker.setLngLat([lng2,lat2]),onDragEnd:fn=>{dragEnd=fn},finishDrag:finish,raw:marker};
     }
 
     function moveMapTo(lng,lat,zoom){
@@ -367,13 +384,17 @@
     }
 
     function fitMapTo(apt,points){
+      const anchor={lat:Number.isFinite(apt.originalLat)?apt.originalLat:apt.lat,lng:Number.isFinite(apt.originalLng)?apt.originalLng:apt.lng};
+      const nearby=item=>Number.isFinite(item.lat)&&Number.isFinite(item.lng)&&Math.abs(item.lat-anchor.lat)<=.03&&Math.abs(item.lng-anchor.lng)<=.03;
+      const center=nearby(apt)?apt:anchor,validPoints=points.filter(nearby);
+      if(!validPoints.length){moveMapTo(center.lng,center.lat,18);return}
       if(useNaverMap){
-        const bounds=new naver.maps.LatLngBounds(new naver.maps.LatLng(apt.lat,apt.lng),new naver.maps.LatLng(apt.lat,apt.lng));
-        points.forEach(item=>bounds.extend(new naver.maps.LatLng(item.lat,item.lng)));
+        const bounds=new naver.maps.LatLngBounds(new naver.maps.LatLng(center.lat,center.lng),new naver.maps.LatLng(center.lat,center.lng));
+        validPoints.forEach(item=>bounds.extend(new naver.maps.LatLng(item.lat,item.lng)));
         map.fitBounds(bounds,{top:70,right:70,bottom:90,left:70});
         if(map.getZoom()>18)map.setZoom(18);
       }else{
-        const bounds=points.reduce((box,item)=>box.extend([item.lng,item.lat]),new maplibregl.LngLatBounds([apt.lng,apt.lat],[apt.lng,apt.lat]));
+        const bounds=validPoints.reduce((box,item)=>box.extend([item.lng,item.lat]),new maplibregl.LngLatBounds([center.lng,center.lat],[center.lng,center.lat]));
         map.fitBounds(bounds,{padding:{top:70,bottom:90,left:70,right:70},maxZoom:18,duration:500});
       }
     }
@@ -438,6 +459,15 @@
           apt.facilities = items;
           if(items.length) aptWithData++;
         });
+        addedFacilities.forEach(stored=>{
+          const apt=byId.get(stored.apartmentId);if(!apt||apt.facilities.some(item=>item.id===stored.id))return;
+          const saved=savedCorrections[stored.id],lat=Number(saved?.lat??stored.lat),lng=Number(saved?.lng??stored.lng);
+          if(!Number.isFinite(lat)||!Number.isFinite(lng)||!['receiver','siamese'].includes(stored.type))return;
+          apt.facilities.push({id:stored.id,type:stored.type,label:stored.label||'추가 시설',lat,lng,originalLat:Number(stored.originalLat??stored.lat),originalLng:Number(stored.originalLng??stored.lng),source:'웹앱 추가',added:true});
+        });
+        siameseCount=apartments.reduce((count,apt)=>count+apt.facilities.filter(item=>item.type==='siamese').length,0);
+        receiverCount=apartments.reduce((count,apt)=>count+apt.facilities.filter(item=>item.type==='receiver').length,0);
+        aptWithData=apartments.filter(apt=>apt.facilities.length).length;
         return {siameseCount, receiverCount, aptWithData};
       }catch(err){
         console.warn('HTML 내부 시설 데이터 적용 실패 — 시설 데이터 없이 지도를 표시합니다.', err);
@@ -474,6 +504,7 @@
           const facilityHandler=e=>{if(e&&e.stopPropagation)e.stopPropagation();correctionMode?selectCorrectionFacility(apt,facility):showFacility(apt,facility)};
           if(!useNaverMap)dot.addEventListener('click',facilityHandler);
           const facilityMarker=addHtmlMarker(dot,facility.lng,facility.lat,facilityHandler);
+          facilityMarker.setScale(facilityMarkerScale());
           facilityMarker.setVisible(true);
           facilityMarker.setDraggable(correctionMode);
           facilityMarker.onDragEnd(()=>handleFacilityDrag(apt,facility,facilityMarker));
@@ -486,7 +517,7 @@
 
     function updateDongVisibility(){
       const visible=getMapZoom()>=15.5;
-      markers.forEach((marker,key)=>{if(key.includes('-D'))marker.setVisible(visible||correctionMode)});
+      markers.forEach((marker,key)=>{if(key.includes('-D'))marker.setVisible(visible||correctionMode);else if(findFacilityById(key)?.facility?.type)marker.setScale(facilityMarkerScale())});
     }
     if(useNaverMap)naver.maps.Event.addListener(map,'zoom_changed',updateDongVisibility);
     else map.on('zoom',updateDongVisibility);
@@ -506,6 +537,7 @@
 
     function selectApartment(id){
       selectedApartment=id; const apt=apartments.find(a=>a.id===id); if(!apt)return;
+      setFacilityAdderStatus(`${apt.name}에 추가할 시설 정보를 입력해 주세요.`);
       renderMap(); renderList(document.getElementById('searchInput').value);
       updateCorrectionUI();
       closeApartmentDrawer();
@@ -576,6 +608,23 @@
 
     function persistCorrections(){
       try{localStorage.setItem(correctionStorageKey,JSON.stringify(savedCorrections));correctionSaveError=false;return true}catch(e){correctionSaveError=true;console.warn('좌표 보정값을 브라우저에 저장하지 못했습니다.',e);return false}
+    }
+
+    function persistAddedFacilities(){try{localStorage.setItem(addedFacilityStorageKey,JSON.stringify(addedFacilities));return true}catch(e){console.warn('추가 시설을 브라우저에 저장하지 못했습니다.',e);return false}}
+    function setFacilityAdderStatus(message,error=false){const el=document.getElementById('facilityAdderStatus');el.textContent=message;el.classList.toggle('error',error)}
+    let facilityCoordinatePickMode=false;
+    function setFacilityCoordinatePickMode(active){facilityCoordinatePickMode=active;const button=document.getElementById('pickFacilityCoordinateBtn');button.textContent=active?'지도에서 위치를 클릭하세요':'좌표 선택';button.classList.toggle('active',active);if(!useNaverMap)map.getCanvas().style.cursor=active?'crosshair':'';setFacilityAdderStatus(active?'지도에서 시설을 설치할 위치를 클릭해 주세요.':'좌표 선택이 취소되었습니다.')}
+    function applyPickedFacilityCoordinate(lat,lng){document.getElementById('newFacilityLat').value=Number(lat).toFixed(8);document.getElementById('newFacilityLng').value=Number(lng).toFixed(8);facilityCoordinatePickMode=false;const button=document.getElementById('pickFacilityCoordinateBtn');button.textContent='좌표 선택';button.classList.remove('active');if(!useNaverMap)map.getCanvas().style.cursor='';setFacilityAdderStatus('선택한 지도 좌표를 입력했습니다.')}
+    function addFacilityFromInputs(){
+      const apt=apartments.find(item=>item.id===selectedApartment);if(!apt){setFacilityAdderStatus('추가할 아파트 단지를 먼저 선택해 주세요.',true);return}
+      const type=document.getElementById('newFacilityType').value,lat=Number(document.getElementById('newFacilityLat').value),lng=Number(document.getElementById('newFacilityLng').value);
+      if(!Number.isFinite(lat)||!Number.isFinite(lng)||lat<-90||lat>90||lng<-180||lng>180){setFacilityAdderStatus('올바른 위도·경도를 입력해 주세요.',true);return}
+      const sameTypeCount=apt.facilities.filter(item=>item.type===type).length+1,label=document.getElementById('newFacilityLabel').value.trim()||(type==='receiver'?`수신반 ${sameTypeCount}`:`연결송수관 ${sameTypeCount}`);
+      const id=`${apt.id}-U${Date.now().toString(36)}${Math.random().toString(36).slice(2,5)}`,facility={id,type,label,lat:Number(lat.toFixed(8)),lng:Number(lng.toFixed(8)),originalLat:Number(lat.toFixed(8)),originalLng:Number(lng.toFixed(8)),source:'웹앱 추가',added:true};
+      apt.facilities.push(facility);addedFacilities.push({id,apartmentId:apt.id,type,label,lat:facility.lat,lng:facility.lng,originalLat:facility.originalLat,originalLng:facility.originalLng});
+      savedCorrections[id]={lat:facility.lat,lng:facility.lng,modifiedAt:new Date().toISOString(),added:true};
+      if(!persistAddedFacilities()||!persistCorrections()){setFacilityAdderStatus('브라우저 저장에 실패했습니다. CSV로 내보내 주세요.',true)}else setFacilityAdderStatus(`${label} 추가·저장 완료`);
+      document.getElementById('newFacilityLabel').value='';renderMap();renderList(document.getElementById('searchInput').value);selectCorrectionFacility(apt,facility);updateCorrectionUI();
     }
 
     function updateCorrectionUI(){
@@ -657,6 +706,10 @@
     document.getElementById('exportCorrectionBtn').addEventListener('click',exportCorrections);
     document.getElementById('clearSavedBtn').addEventListener('click',clearSavedCorrections);
     document.getElementById('coordinateApplyBtn').addEventListener('click',applyTypedCoordinates);
+    document.getElementById('pickFacilityCoordinateBtn').addEventListener('click',()=>setFacilityCoordinatePickMode(!facilityCoordinatePickMode));
+    document.getElementById('addFacilityBtn').addEventListener('click',addFacilityFromInputs);
+    if(useNaverMap)naver.maps.Event.addListener(map,'click',event=>{if(facilityCoordinatePickMode)applyPickedFacilityCoordinate(event.coord.lat(),event.coord.lng())});
+    else map.on('click',event=>{if(facilityCoordinatePickMode)applyPickedFacilityCoordinate(event.lngLat.lat,event.lngLat.lng)});
     ['coordinateLat','coordinateLng'].forEach(id=>document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter')applyTypedCoordinates()}));
     const apartmentDrawer=document.getElementById('apartmentDrawer');
     const drawerBackdrop=document.getElementById('drawerBackdrop');
@@ -686,8 +739,8 @@
     let shapeMode='select',selectedShapeId=null,shapeDraft=[],shapeStart=null,shapeHistory=[],lastShapeApt=null;
     const shapeSvg=document.createElementNS('http://www.w3.org/2000/svg','svg');shapeSvg.id='shapeOverlay';shapeSvg.classList.add('shape-overlay');document.querySelector('main').appendChild(shapeSvg);
 
-    function userShapeGeoJSON(){return {type:'FeatureCollection',features:userBuildingShapes.filter(s=>!s.apartmentId||s.apartmentId===selectedApartment).map(s=>({type:'Feature',properties:{id:s.id,fill:s.color||'#d3d1cc',stroke:s.stroke||'#777773'},geometry:{type:'Polygon',coordinates:[s.coordinates]}}))}}
-    function ensureUserShapeMapLayers(){if(useNaverMap||!map.isStyleLoaded())return;if(!map.getSource('user-building-shapes'))map.addSource('user-building-shapes',{type:'geojson',data:userShapeGeoJSON()});if(!map.getLayer('user-building-shape-fill'))map.addLayer({id:'user-building-shape-fill',type:'fill',source:'user-building-shapes',paint:{'fill-color':['get','fill'],'fill-opacity':.92}});if(!map.getLayer('user-building-shape-outline'))map.addLayer({id:'user-building-shape-outline',type:'line',source:'user-building-shapes',paint:{'line-color':['get','stroke'],'line-width':1.5}})}
+    function userShapeGeoJSON(){return {type:'FeatureCollection',features:userBuildingShapes.map(s=>({type:'Feature',properties:{id:s.id,fill:s.color||'#d3d1cc',stroke:s.stroke||'#777773'},geometry:{type:'Polygon',coordinates:[s.coordinates]}}))}}
+    function ensureUserShapeMapLayers(){if(useNaverMap||!map.isStyleLoaded())return;if(!map.getSource('user-building-shapes'))map.addSource('user-building-shapes',{type:'geojson',data:userShapeGeoJSON()});const before=map.getLayer('facility-receiver-fixed')?'facility-receiver-fixed':map.getLayer('facility-siamese-fixed')?'facility-siamese-fixed':undefined;if(!map.getLayer('user-building-shape-fill'))map.addLayer({id:'user-building-shape-fill',type:'fill',source:'user-building-shapes',paint:{'fill-color':['get','fill'],'fill-opacity':.92}},before);if(!map.getLayer('user-building-shape-outline'))map.addLayer({id:'user-building-shape-outline',type:'line',source:'user-building-shapes',paint:{'line-color':['get','stroke'],'line-width':1.5}},before);if(before){map.moveLayer('user-building-shape-fill',before);map.moveLayer('user-building-shape-outline',before)}}
     function bringFacilityCanvasLayersToFront(){if(useNaverMap||!map.isStyleLoaded())return;['facility-receiver-fixed','facility-siamese-fixed'].forEach(id=>{if(map.getLayer(id))map.moveLayer(id)})}
     function syncUserShapeMapLayers(){if(useNaverMap||!map.isStyleLoaded())return;ensureUserShapeMapLayers();const source=map.getSource('user-building-shapes');if(source)source.setData(userShapeGeoJSON());const editing=document.getElementById('shapeEditor')?.classList.contains('open');['user-building-shape-fill','user-building-shape-outline'].forEach(id=>{if(map.getLayer(id))map.setLayoutProperty(id,'visibility',editing?'none':'visible')});bringFacilityCanvasLayersToFront()}
 
@@ -707,7 +760,8 @@
       const editorOpen=document.getElementById('shapeEditor')?.classList.contains('open');
       if(!useNaverMap&&!editorOpen){shapeSvg.innerHTML='';return}
       shapeSvg.setAttribute('viewBox',`0 0 ${shapeSvg.clientWidth||1} ${shapeSvg.clientHeight||1}`);shapeSvg.innerHTML='';
-      shapeForCurrent().forEach(s=>{const p=document.createElementNS(shapeSvg.namespaceURI,'path');p.setAttribute('d',shapePath(s.coordinates));p.setAttribute('fill',s.color||'#d3d1cc');p.setAttribute('fill-opacity','.92');p.setAttribute('stroke',s.stroke||'#777773');p.setAttribute('stroke-width',s.id===selectedShapeId?'3':'1.5');p.dataset.id=s.id;p.classList.add('shape-building');if(s.id===selectedShapeId)p.classList.add('selected');shapeSvg.appendChild(p)});
+      const visibleShapes=editorOpen?shapeForCurrent():userBuildingShapes;
+      visibleShapes.forEach(s=>{const p=document.createElementNS(shapeSvg.namespaceURI,'path');p.setAttribute('d',shapePath(s.coordinates));p.setAttribute('fill',s.color||'#d3d1cc');p.setAttribute('fill-opacity','.92');p.setAttribute('stroke',s.stroke||'#777773');p.setAttribute('stroke-width',s.id===selectedShapeId?'3':'1.5');p.dataset.id=s.id;p.classList.add('shape-building');if(s.id===selectedShapeId)p.classList.add('selected');shapeSvg.appendChild(p)});
       const s=userBuildingShapes.find(x=>x.id===selectedShapeId);if(shapeMode==='select'&&s&&(!s.apartmentId||s.apartmentId===selectedApartment)){const visible=s.coordinates.slice(0,-1),screen=visible.map(lngLatToScreen),cx=screen.reduce((a,p)=>a+p[0],0)/screen.length,minY=Math.min(...screen.map(p=>p[1])),anchorY=minY-2,handleY=minY-34;const line=document.createElementNS(shapeSvg.namespaceURI,'line');line.setAttribute('x1',cx);line.setAttribute('y1',anchorY);line.setAttribute('x2',cx);line.setAttribute('y2',handleY);line.classList.add('shape-rotate-line');shapeSvg.appendChild(line);const rotate=document.createElementNS(shapeSvg.namespaceURI,'circle');rotate.setAttribute('cx',cx);rotate.setAttribute('cy',handleY);rotate.setAttribute('r','8');rotate.dataset.id=s.id;rotate.dataset.rotate='true';rotate.classList.add('shape-rotate-handle');shapeSvg.appendChild(rotate);visible.forEach((c,i)=>{const p=screen[i],v=document.createElementNS(shapeSvg.namespaceURI,'circle');v.setAttribute('cx',p[0]);v.setAttribute('cy',p[1]);v.setAttribute('r','5');v.dataset.vertex=i;v.dataset.id=s.id;v.classList.add('shape-handle');shapeSvg.appendChild(v)})}
       if(shapeDraft.length>1){const q=document.createElementNS(shapeSvg.namespaceURI,'path');q.setAttribute('d',shapePath([...shapeDraft,shapeDraft[0]]));q.classList.add('shape-preview');shapeSvg.appendChild(q)}
     }
