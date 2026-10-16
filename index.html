@@ -10,8 +10,8 @@
   <style>
     :root {
       --navy:#152640; --navy-2:#203a60; --paper:#f4f7fb; --white:#fff;
-      --text:#172033; --muted:#627086; --line:#dce3ec; --receiver:#1677d2; --receiver-marker:#1677d2;
-      --siamese:#e33b42; --shadow:0 12px 34px rgba(19,38,66,.17);
+      --text:#172033; --muted:#627086; --line:#dce3ec; --receiver:#1677d2; --receiver-marker:#198754;
+      --siamese:#1677d2; --shadow:0 12px 34px rgba(19,38,66,.17);
     }
     *{box-sizing:border-box}
     html,body{height:100%;margin:0;font-family:Pretendard,"Noto Sans KR","Apple SD Gothic Neo",sans-serif;color:var(--text);background:var(--paper)}
@@ -21,7 +21,7 @@
     header{z-index:1000;background:linear-gradient(135deg,var(--navy),var(--navy-2));padding:14px 16px 12px;color:#fff;box-shadow:0 5px 20px rgba(12,28,48,.2)}
     .title-row{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:1280px;margin:auto}
     .brand{display:flex;align-items:center;gap:10px;min-width:0}
-    .badge{width:38px;height:38px;border-radius:11px;background:#fff;color:var(--receiver);display:grid;place-items:center;font-weight:900;box-shadow:inset 0 0 0 1px rgba(255,255,255,.6)}
+    .badge{width:38px;height:38px;border-radius:11px;background:#fff;color:#e33b42;display:grid;place-items:center;font-weight:900;box-shadow:inset 0 0 0 1px rgba(255,255,255,.6)}
     h1{font-size:1.08rem;line-height:1.25;margin:0;font-weight:800;letter-spacing:-.02em}
     .subtitle{font-size:.78rem;color:#cbd8e9;margin-top:3px}
     .draft{font-size:.72rem;font-weight:800;padding:5px 8px;border-radius:999px;background:#ffcf5a;color:#3d3000;white-space:nowrap}
@@ -34,7 +34,7 @@
     .locate{height:44px;padding:0 14px;border:1px solid rgba(255,255,255,.3);border-radius:12px;background:rgba(255,255,255,.12);color:#fff;font-weight:700;white-space:nowrap}
     main{position:relative;min-height:0}
     #map{height:100%;width:100%;background:#dfe6ec}
-    .legend{position:absolute;z-index:600;left:10px;top:10px;background:rgba(255,255,255,.96);padding:10px 12px;border-radius:12px;box-shadow:0 6px 20px rgba(22,38,61,.16);font-size:.8rem;line-height:1.8}
+    .legend{position:absolute;z-index:600;left:10px;top:10px;background:rgba(255,255,255,.96);padding:10px 12px;border-radius:12px;box-shadow:0 6px 20px rgba(22,38,61,.16);font-size:.8rem;line-height:1.8;text-align:center}
     .legend-title{font-weight:800;border-bottom:1px solid var(--line);margin-bottom:5px}
     .dot{display:inline-block;width:11px;height:11px;margin-right:7px;vertical-align:-1px;box-shadow:0 0 0 1px rgba(0,0,0,.22)}
     .dot.apt{background:var(--navy);border-radius:50%}.dot.receiver{background:var(--receiver-marker);border-radius:1px}.dot.siamese{position:relative;background:#fff;clip-path:polygon(50% 0,100% 100%,0 100%);box-shadow:none}.dot.siamese::after{content:'';position:absolute;inset:2px 2px 1px;background:var(--siamese);clip-path:polygon(50% 0,100% 100%,0 100%)}
@@ -52,8 +52,8 @@
     .facility-count{font-size:.72rem;color:#40516a;margin-top:8px}
     .marker{display:grid;place-items:center;width:15px;height:15px;padding:0;border-radius:50%;border:1.5px solid #fff;box-shadow:0 2px 5px rgba(0,0,0,.3);color:#fff;font-weight:900;line-height:1;cursor:pointer}
     .marker span{font-size:5px;letter-spacing:-.35px}.marker.apt{background:var(--navy)}.marker.apt.active{transform:scale(1.25);box-shadow:0 0 0 2px rgba(32,58,96,.25),0 2px 5px rgba(0,0,0,.3)}
-    .facility-marker{width:18px;height:18px;padding:0;border:3px solid #fff;box-shadow:0 2px 7px rgba(0,0,0,.42);cursor:pointer;transition:opacity .15s}
-    .dong-marker{padding:2px 5px;border:1.5px solid #203a60;border-radius:5px;background:rgba(255,255,255,.94);color:#152640;font-size:11px;font-weight:900;line-height:1;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.24);pointer-events:none}.dong-marker.editing{pointer-events:auto;cursor:grab;animation:editPulse 1.35s ease-in-out infinite}.marker.apt.editing{cursor:grab;animation:editPulse 1.35s ease-in-out infinite}.dong-marker.hidden{display:none}.facility-marker:hover{opacity:.86}.facility-marker.receiver{background:var(--receiver-marker);border-radius:2px}.facility-marker.siamese{position:relative;background:#fff;border:0;clip-path:polygon(50% 0,100% 100%,0 100%);filter:drop-shadow(0 2px 2px rgba(0,0,0,.45))}.facility-marker.siamese::after{content:'';position:absolute;inset:3px 3px 2px;background:var(--siamese);clip-path:polygon(50% 0,100% 100%,0 100%);pointer-events:none}.facility-marker.hidden{display:none}
+    .facility-marker{width:12px;height:12px;padding:0;border:1.5px solid #fff;box-shadow:0 2px 7px rgba(0,0,0,.42);cursor:pointer;transition:opacity .15s}
+    .dong-marker{padding:2px 5px;border:1.5px solid #203a60;border-radius:5px;background:rgba(255,255,255,.94);color:#152640;font-size:11px;font-weight:900;line-height:1;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.24);pointer-events:none}.dong-marker.editing{pointer-events:auto;cursor:grab;animation:editPulse 1.35s ease-in-out infinite}.marker.apt.editing{cursor:grab;animation:editPulse 1.35s ease-in-out infinite}.dong-marker.hidden{display:none}.facility-marker:hover{opacity:.86}.facility-marker.receiver{width:7.9px;height:7.9px;background:var(--receiver-marker);border-radius:1px}.facility-marker.siamese{position:relative;width:12px;height:10.392px;background:#fff;border:0;clip-path:polygon(50% 0,100% 100%,0 100%);filter:drop-shadow(0 2px 2px rgba(0,0,0,.45))}.facility-marker.siamese::after{content:'';position:absolute;inset:1.5px 1.5px 1.098px;background:var(--siamese);clip-path:polygon(50% 0,100% 100%,0 100%);pointer-events:none}.facility-marker.hidden{display:none}
     .map-style-control{display:flex;flex-direction:column;gap:4px;margin:10px}.map-style-control button{min-width:76px;border:1px solid #c9d2df;border-radius:6px;background:#fff;color:#243550;padding:7px 9px;font-size:.76rem;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,.13)}.map-style-control button.active{background:#203a60;color:#fff;border-color:#203a60}
     .naver-map-style-control{position:absolute;z-index:500;left:0;bottom:0}
     .edit-tools-stack{position:absolute;z-index:560;right:10px;top:10px;width:min(286px,calc(100% - 20px));display:flex;flex-direction:column;gap:8px;align-items:stretch}.edit-lock{display:grid;grid-template-columns:1fr auto;gap:6px;padding:7px;background:rgba(255,255,255,.97);border:1px solid #d5deea;border-radius:11px;box-shadow:0 5px 18px rgba(20,38,65,.16)}.edit-lock input{min-width:0;height:30px;border:1px solid #cbd6e4;border-radius:7px;padding:4px 8px;font-size:.7rem;outline:none}.edit-lock input:focus{border-color:#1677d2;box-shadow:0 0 0 2px rgba(22,119,210,.12)}.edit-lock button{height:30px;border:0;border-radius:7px;background:#203a60;color:#fff;padding:0 10px;font-size:.68rem;font-weight:800}.edit-lock-status{grid-column:1/-1;min-height:13px;color:#627086;font-size:.61rem;line-height:1.25}.edit-lock-status.error{color:#c43139}.edit-lock-status.unlocked{color:#16703b;font-weight:750}.edit-tools-panel{width:100%;background:rgba(255,255,255,.97);border:1px solid #d5deea;border-radius:13px;box-shadow:0 7px 24px rgba(20,38,65,.2);overflow:hidden}.edit-tools-toggle{width:100%;min-height:40px;border:0;background:#152640;color:#fff;padding:10px 12px;font-size:.8rem;font-weight:800;text-align:left;display:flex;align-items:center;justify-content:space-between}.edit-tools-toggle::after{content:'＋';font-size:1rem}.edit-tools-panel.open>.edit-tools-toggle::after{content:'−'}.edit-tools-toggle:disabled{opacity:.58;cursor:not-allowed}.edit-tools-body{display:none;padding:8px;background:#f2f5f9}.edit-tools-panel.open>.edit-tools-body{display:flex;flex-direction:column;gap:8px}.correction-panel{position:relative;width:100%;background:rgba(255,255,255,.97);border:1px solid #d5deea;border-radius:10px;overflow:hidden}
@@ -96,7 +96,7 @@
     </header>
     <main>
       <div id="map" aria-label="구리시 공동주택 현황 지도"></div>
-      <div class="legend"><div class="legend-title">시설 범례</div><div><span class="dot siamese"></span>연결송수관</div><div><span class="dot receiver"></span>수신반</div></div>
+      <div class="legend"><div class="legend-title">시설 범례</div><div><span class="dot siamese"></span>송수구</div><div><span class="dot receiver"></span>수신반</div></div>
       <div class="edit-tools-stack">
       <section class="edit-lock" aria-label="편집 도구 암호 입력">
         <input id="editPassword" type="password" inputmode="numeric" autocomplete="off" placeholder="편집 암호" aria-label="편집 암호">
@@ -123,7 +123,7 @@
           <div class="facility-adder">
             <div class="facility-adder-title">소방시설 마커 추가</div>
             <div class="facility-adder-grid">
-              <label>시설 종류<select id="newFacilityType"><option value="receiver">수신반</option><option value="siamese">연결송수관</option></select></label>
+              <label>시설 종류<select id="newFacilityType"><option value="receiver">수신반</option><option value="siamese">송수구</option></select></label>
               <label>시설 명칭<input id="newFacilityLabel" placeholder="예: 101동 수신반"></label>
               <label>위도<input id="newFacilityLat" inputmode="decimal" placeholder="37.00000000"></label>
               <label>경도<input id="newFacilityLng" inputmode="decimal" placeholder="127.00000000"></label>
@@ -259,6 +259,7 @@
     }else{
       map.on('style.load',()=>{addOfficialBuildingLayer();setTimeout(()=>{syncUserShapeMapLayers();addFacilityCanvasLayers()},0)});
     }
+    const spreadsheetFacilityReplacements={"APT-064":{"연결송수관":[{"label":"101동 연결송수관","lat":37.60844961,"lng":127.13627275,"source":"전체 마커 좌표 보정(9.29.)","note":"예시(확보완료)"},{"label":"102동 연결송수관","lat":37.60822862,"lng":127.13675946,"source":"GPS실측","note":"예시(확보완료)"},{"label":"104동 연결송수관","lat":37.60875347,"lng":127.13670995,"source":"전체 마커 좌표 보정(9.29.)","note":"예시(확보완료)"},{"label":"105동 연결송수관","lat":37.60844964,"lng":127.13720394,"source":"전체 마커 좌표 보정(9.29.)","note":"예시(확보완료)"},{"label":"106동 연결송수관","lat":37.60908994,"lng":127.13689801,"source":"GPS실측","note":"예시(확보완료)"},{"label":"107동 연결송수관","lat":37.6088495,"lng":127.13735443,"source":"GPS실측","note":"예시(확보완료)"}],"수신반":[{"label":"관리사무소 수신반","lat":37.6081087,"lng":127.13740556,"source":"GPS실측","note":"예시(확보완료)"}]},"APT-066":{"연결송수관":[{"label":"101동 연결송수관","lat":37.60363758,"lng":127.13051324,"source":"GPS실측","note":"예시(확보완료)"},{"label":"102동 연결송수관","lat":37.603652,"lng":127.13016224,"source":"전체 마커 좌표 보정(9.29.)","note":"예시(확보완료)"},{"label":"103동 연결송수관","lat":37.60332389,"lng":127.13056384,"source":"전체 마커 좌표 보정(9.29.)","note":"예시(확보완료)"},{"label":"104동 연결송수관","lat":37.60313182,"lng":127.13040875,"source":"GPS실측","note":"예시(확보완료)"}],"수신반":[{"label":"103동 수신반","lat":37.60334765,"lng":127.13062244,"source":"GPS실측","note":"예시(확보완료)"}]},"APT-070":{"연결송수관":[{"label":"101동 연결송수관","lat":37.61022378,"lng":127.1366479,"source":"전체 마커 좌표 보정(9.29.)","note":"예시(확보완료)"},{"label":"102동 연결송수관","lat":37.61034065,"lng":127.13636359,"source":"전체 마커 좌표 보정(9.29.)","note":"예시(확보완료)"},{"label":"103동 연결송수관","lat":37.61007502,"lng":127.13646283,"source":"전체 마커 좌표 보정(9.29.)","note":"예시(확보완료)"},{"label":"104동 연결송수관","lat":37.61026262,"lng":127.13565338,"source":"GPS실측","note":"예시(확보완료)"},{"label":"105동 연결송수관","lat":37.61012634,"lng":127.13522135,"source":"전체 마커 좌표 보정(9.29.)","note":"예시(확보완료)"},{"label":"106동 연결송수관","lat":37.61029867,"lng":127.13484712,"source":"전체 마커 좌표 보정(9.29.)","note":"예시(확보완료)"},{"label":"107동 연결송수관","lat":37.61054515,"lng":127.13489808,"source":"전체 마커 좌표 보정(9.29.)","note":"예시(확보완료)"},{"label":"108동 연결송수관","lat":37.6109385,"lng":127.1352691,"source":"GPS실측","note":"예시(확보완료)"},{"label":"109동 연결송수관","lat":37.61072348,"lng":127.13572735,"source":"전체 마커 좌표 보정(9.29.)","note":"예시(확보완료)"},{"label":"110동 연결송수관","lat":37.6109347,"lng":127.13545087,"source":"GPS실측","note":"예시(확보완료)"},{"label":"111동 연결송수관","lat":37.61062786,"lng":127.13606531,"source":"전체 마커 좌표 보정(9.29.)","note":"예시(확보완료)"}],"수신반":[{"label":"관리동 수신반","lat":37.6108425,"lng":127.13587994,"source":"GPS실측","note":"예시(확보완료)"}]},"APT-071":{"연결송수관":[{"label":"201동 연결송수관","lat":37.60214232,"lng":127.12987459,"source":"현장 실측","note":""}],"수신반":[{"label":"관리실 수신반","lat":37.60215384,"lng":127.1298193,"source":"전체 마커 좌표 보정(9.29.)","note":""}]},"APT-072":{"연결송수관":[{"label":"101동 연결송수관","lat":37.60235966,"lng":127.12942555,"source":"현장 실측","note":""},{"label":"102동 연결송수관","lat":37.60258598,"lng":127.1293357,"source":"현장 실측","note":""},{"label":"103동 연결송수관","lat":37.60283036,"lng":127.12940947,"source":"현장 실측","note":""},{"label":"104동 연결송수관","lat":37.60301593,"lng":127.12956605,"source":"현장 실측","note":""},{"label":"201동 연결송수관","lat":37.60254348,"lng":127.12995798,"source":"현장 실측","note":""},{"label":"202동 연결송수관","lat":37.60279317,"lng":127.12969646,"source":"현장 실측","note":""},{"label":"203동 연결송수관","lat":37.60275599,"lng":127.13006392,"source":"현장 실측","note":""},{"label":"204동 연결송수관","lat":37.6029823,"lng":127.12997139,"source":"현장 실측","note":""}],"수신반":[{"label":"203동 수신반","lat":37.60275599,"lng":127.13006392,"source":"현장 실측","note":""}]},"APT-073":{"연결송수관":[{"label":"101동 연결송수관","lat":37.60333243,"lng":127.13897714,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"102동 연결송수관","lat":37.60357118,"lng":127.13824378,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"103동 연결송수관","lat":37.60292572,"lng":127.1374493,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"104동 연결송수관","lat":37.60291703,"lng":127.13817578,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"105동 연결송수관","lat":37.60301539,"lng":127.13879602,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"106동 연결송수관","lat":37.60310072,"lng":127.13974095,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"107동 연결송수관","lat":37.60338348,"lng":127.13985096,"source":"전체 마커 좌표 보정(9.29.)","note":""}],"수신반":[{"label":"101동 수신반","lat":37.60342308,"lng":127.13888335,"source":"현장 실측","note":""}]},"APT-007":{"연결송수관":[{"label":"306동 연결송수관","lat":37.58610042,"lng":127.13725262,"source":"플러스 코드","note":""},{"label":"305동 연결송수관","lat":37.5857741,"lng":127.13693414,"source":"플러스 코드","note":""},{"label":"304동 연결송수관","lat":37.58609422,"lng":127.13661615,"source":"플러스 코드","note":""},{"label":"303동 연결송수관","lat":37.58542454,"lng":127.13657428,"source":"플러스 코드","note":""},{"label":"302동 연결송수관","lat":37.58514122,"lng":127.13693878,"source":"플러스 코드","note":""},{"label":"301동 연결송수관","lat":37.58542454,"lng":127.13745648,"source":"플러스 코드","note":""}],"수신반":[{"label":"경비실 수신반","lat":37.58589182,"lng":127.13761896,"source":"플러스 코드","note":""}]},"APT-010":{"수신반":[{"label":"상가건물 수신반","lat":37.59253646,"lng":127.13742977,"source":"플러스 코드","note":""}]},"APT-004":{"연결송수관":[{"label":"101동 연결송수관","lat":37.59872388,"lng":127.12969086,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"102동 연결송수관","lat":37.59922604,"lng":127.12966515,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"103동 연결송수관","lat":37.59970976,"lng":127.12960554,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"104동 연결송수관","lat":37.60012853,"lng":127.12933348,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"105동 연결송수관","lat":37.59938127,"lng":127.12861605,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"106동 연결송수관","lat":37.59997481,"lng":127.12874931,"source":"전체 마커 좌표 보정(9.29.)","note":""}],"수신반":[{"label":"105동 수신반","lat":37.59938127,"lng":127.12861605,"source":"플러스 코드","note":""}]},"APT-003":{"연결송수관":[{"label":"101동 연결송수관","lat":37.58796871,"lng":127.1481566,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"102동 연결송수관","lat":37.58790495,"lng":127.1479313,"source":"전체 마커 좌표 보정(9.29.)","note":""}],"수신반":[{"label":"102동 수신반","lat":37.58776042,"lng":127.14788034,"source":"전체 마커 좌표 보정(9.29.)","note":""}]},"APT-023":{"연결송수관":[{"label":"101동 연결송수관","lat":37.59636276,"lng":127.1376031,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"102동 연결송수관","lat":37.59575378,"lng":127.13745713,"source":"전체 마커 좌표 보정(9.29.)","note":""}],"수신반":[{"label":"관리사무소 수신반","lat":37.59654546,"lng":127.13749713,"source":"플러스 코드","note":""}]},"APT-038":{"연결송수관":[{"label":"101동 연결송수관","lat":37.59665406,"lng":127.13804006,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"102동 연결송수관","lat":37.59651525,"lng":127.1384623,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"103동 연결송수관","lat":37.59606758,"lng":127.13845931,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"104동 연결송수관","lat":37.59602224,"lng":127.13914101,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"105동 연결송수관","lat":37.59559945,"lng":127.13899976,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"106동 연결송수관","lat":37.59545322,"lng":127.13992169,"source":"플러스 코드","note":""},{"label":"107동 연결송수관","lat":37.59587322,"lng":127.13995575,"source":"플러스 코드","note":""},{"label":"108동 연결송수관","lat":37.59603678,"lng":127.13995702,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"109동 연결송수관","lat":37.59647542,"lng":127.13963434,"source":"플러스 코드","note":""},{"label":"110동 연결송수관","lat":37.5965034,"lng":127.13894659,"source":"전체 마커 좌표 보정(9.29.)","note":""}],"수신반":[{"label":"경비실1 수신반","lat":37.59674026,"lng":127.1381859,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"경비실2 수신반","lat":37.59515802,"lng":127.1400899,"source":"플러스 코드","note":""},{"label":"관리동(107동 1층) 수신반","lat":37.5957585,"lng":127.13990253,"source":"플러스 코드","note":""}]},"APT-028":{"연결송수관":[{"label":"201동 연결송수관","lat":37.59330715,"lng":127.15344574,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"202동 연결송수관","lat":37.59323551,"lng":127.15375535,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"203동 연결송수관","lat":37.59274881,"lng":127.15336911,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"204동 연결송수관","lat":37.59261022,"lng":127.15377804,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"205동 연결송수관","lat":37.59237264,"lng":127.15362928,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"205동 연결송수관","lat":37.59217797,"lng":127.15364849,"source":"플러스 코드","note":""}],"수신반":[{"label":"관리동(2층수신기) 수신반","lat":37.59212878,"lng":127.15412689,"source":"플러스 코드","note":""},{"label":"경비실1 수신반","lat":37.59302774,"lng":127.1532608,"source":"플러스 코드","note":""},{"label":"경비실2 수신반","lat":37.59319866,"lng":127.15362261,"source":"플러스 코드","note":""},{"label":"경비실3 수신반","lat":37.59247222,"lng":127.15324767,"source":"플러스 코드","note":""},{"label":"경비실4 수신반","lat":37.59235138,"lng":127.15388141,"source":"전체 마커 좌표 보정(9.29.)","note":""}]},"APT-079":{"연결송수관":[{"label":"801동 연결송수관","lat":37.63384198,"lng":127.11831568,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"802동 연결송수관","lat":37.63428302,"lng":127.11781669,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"803동 연결송수관","lat":37.63491669,"lng":127.11730986,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"804동 연결송수관","lat":37.63538115,"lng":127.11709185,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"811동 연결송수관","lat":37.63531447,"lng":127.11750051,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"805동 연결송수관","lat":37.63589594,"lng":127.11719063,"source":"현장 실측","note":""},{"label":"806동 연결송수관","lat":37.63532043,"lng":127.11692632,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"807동 연결송수관","lat":37.63495743,"lng":127.11666906,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"808동 연결송수관","lat":37.63427964,"lng":127.11652068,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"809동 연결송수관","lat":37.63406052,"lng":127.11720247,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"810동 연결송수관","lat":37.63369381,"lng":127.11775908,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"811동 연결송수관","lat":37.63504045,"lng":127.11647923,"source":"현장 실측","note":""},{"label":"812동 연결송수관","lat":37.63569154,"lng":127.11755072,"source":"현장 실측","note":""}],"수신반":[{"label":"관리동 수신반","lat":37.63381776,"lng":127.11767796,"source":"플러스 코드","note":""}]},"APT-082":{"연결송수관":[{"label":"201동 연결송수관","lat":37.635565,"lng":127.12099984,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"202동 연결송수관","lat":37.63554198,"lng":127.12142347,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"203동 연결송수관","lat":37.63508153,"lng":127.12153145,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"204동 연결송수관","lat":37.63503617,"lng":127.12081855,"source":"현장 실측","note":""},{"label":"205동 연결송수관","lat":37.63442959,"lng":127.12093498,"source":"현장 실측","note":""},{"label":"206동 연결송수관","lat":37.63457162,"lng":127.12178922,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"207동 연결송수관","lat":37.63411456,"lng":127.12197584,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"208동 연결송수관","lat":37.6336021,"lng":127.12193622,"source":"플러스 코드","note":""},{"label":"209동 연결송수관","lat":37.63372328,"lng":127.12133541,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"210동 연결송수관","lat":37.6339272,"lng":127.12080795,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"211동 연결송수관","lat":37.63466093,"lng":127.12028543,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"212동 연결송수관","lat":37.6341314,"lng":127.11996979,"source":"전체 마커 좌표 보정(9.29.)","note":""},{"label":"213동 연결송수관","lat":37.63459515,"lng":127.11986596,"source":"전체 마커 좌표 보정(9.29.)","note":""}],"수신반":[{"label":"관리동(201동 지상통로와 연결) 수신반","lat":37.6357113,"lng":127.12117145,"source":"플러스 코드","note":""}]}};
     const markers = new Map();
     let selectedApartment = null;
     let correctionMode = false;
@@ -283,19 +284,19 @@
     }
 
     function createSiameseCanvasImage(){
-      const canvas=document.createElement('canvas');canvas.width=24;canvas.height=24;
+      const canvas=document.createElement('canvas');canvas.width=16;canvas.height=16;
       const ctx=canvas.getContext('2d');
-      ctx.beginPath();ctx.moveTo(12,0);ctx.lineTo(23,18);ctx.lineTo(1,18);ctx.closePath();ctx.fillStyle='#fff';ctx.fill();
-      ctx.beginPath();ctx.moveTo(12,4);ctx.lineTo(19,16);ctx.lineTo(5,16);ctx.closePath();ctx.fillStyle='#e33b42';ctx.fill();
-      return ctx.getImageData(0,0,24,24);
+      ctx.beginPath();ctx.moveTo(8,.5);ctx.lineTo(15,12.624);ctx.lineTo(1,12.624);ctx.closePath();ctx.fillStyle='#fff';ctx.fill();
+      ctx.beginPath();ctx.moveTo(8,2);ctx.lineTo(12.5,9.794);ctx.lineTo(3.5,9.794);ctx.closePath();ctx.fillStyle='#1677d2';ctx.fill();
+      return ctx.getImageData(0,0,16,16);
     }
 
     function createReceiverCanvasImage(){
-      const canvas=document.createElement('canvas');canvas.width=24;canvas.height=24;
+      const canvas=document.createElement('canvas');canvas.width=16;canvas.height=16;
       const ctx=canvas.getContext('2d');
-      ctx.fillStyle='#fff';ctx.fillRect(2,2,20,20);
-      ctx.fillStyle='#1677d2';ctx.fillRect(5,5,14,14);
-      return ctx.getImageData(0,0,24,24);
+      ctx.fillStyle='#fff';ctx.fillRect(3.394,3.394,9.213,9.213);
+      ctx.fillStyle='#198754';ctx.fillRect(4.894,4.894,6.213,6.213);
+      return ctx.getImageData(0,0,16,16);
     }
 
     function addFacilityCanvasLayers(){
@@ -447,14 +448,14 @@
 
     async function loadFacilities(){
       try{
-        const data = embeddedFacilities;
+        const data = {...embeddedFacilities,...spreadsheetFacilityReplacements};
         const byId = new Map(apartments.map(a=>[a.id,a]));
         let siameseCount=0, receiverCount=0, aptWithData=0;
         Object.keys(data).forEach(aptId=>{
           const apt = byId.get(aptId); if(!apt) return;
           const rec = data[aptId];
           const items = [];
-          (rec['연결송수관']||[]).forEach((f,i)=>{const id=`${aptId}-S${i+1}`,saved=savedCorrections[id];items.push({id,type:'siamese',label:f.label||`연결송수관 ${i+1}`,lng:saved?.lng??f.lng,lat:saved?.lat??f.lat,originalLng:f.lng,originalLat:f.lat,source:f.source||'현장 실측'});siameseCount++;});
+          (rec['연결송수관']||[]).forEach((f,i)=>{const id=`${aptId}-S${i+1}`,saved=savedCorrections[id];items.push({id,type:'siamese',label:String(f.label||`송수구 ${i+1}`).replaceAll('연결송수관','송수구'),lng:saved?.lng??f.lng,lat:saved?.lat??f.lat,originalLng:f.lng,originalLat:f.lat,source:f.source||'현장 실측'});siameseCount++;});
           (rec['수신반']||[]).forEach((f,i)=>{const id=`${aptId}-R${i+1}`,saved=savedCorrections[id];items.push({id,type:'receiver',label:f.label||`수신반 ${i+1}`,lng:saved?.lng??f.lng,lat:saved?.lat??f.lat,originalLng:f.lng,originalLat:f.lat,source:f.source||'현장 실측'});receiverCount++;});
           apt.facilities = items;
           if(items.length) aptWithData++;
@@ -463,7 +464,7 @@
           const apt=byId.get(stored.apartmentId);if(!apt||apt.facilities.some(item=>item.id===stored.id))return;
           const saved=savedCorrections[stored.id],lat=Number(saved?.lat??stored.lat),lng=Number(saved?.lng??stored.lng);
           if(!Number.isFinite(lat)||!Number.isFinite(lng)||!['receiver','siamese'].includes(stored.type))return;
-          apt.facilities.push({id:stored.id,type:stored.type,label:stored.label||'추가 시설',lat,lng,originalLat:Number(stored.originalLat??stored.lat),originalLng:Number(stored.originalLng??stored.lng),source:'웹앱 추가',added:true});
+          apt.facilities.push({id:stored.id,type:stored.type,label:String(stored.label||'추가 시설').replaceAll('연결송수관','송수구'),lat,lng,originalLat:Number(stored.originalLat??stored.lat),originalLng:Number(stored.originalLng??stored.lng),source:'웹앱 추가',added:true});
         });
         siameseCount=apartments.reduce((count,apt)=>count+apt.facilities.filter(item=>item.type==='siamese').length,0);
         receiverCount=apartments.reduce((count,apt)=>count+apt.facilities.filter(item=>item.type==='receiver').length,0);
@@ -571,7 +572,7 @@
     }
 
     function correctionIdOf(item){return item.correctionId||item.id}
-    function correctionKind(apt,item){return item===apt?'아파트 마커':apt.buildings.includes(item)?'동 마커':item.type==='receiver'?'수신반':'연결송수관'}
+    function correctionKind(apt,item){return item===apt?'아파트 마커':apt.buildings.includes(item)?'동 마커':item.type==='receiver'?'수신반':'송수구'}
     function correctionLabel(apt,item){return item===apt?'APT 마커':item.label}
 
     function selectCorrectionFacility(apt,facility){
@@ -619,7 +620,7 @@
       const apt=apartments.find(item=>item.id===selectedApartment);if(!apt){setFacilityAdderStatus('추가할 아파트 단지를 먼저 선택해 주세요.',true);return}
       const type=document.getElementById('newFacilityType').value,lat=Number(document.getElementById('newFacilityLat').value),lng=Number(document.getElementById('newFacilityLng').value);
       if(!Number.isFinite(lat)||!Number.isFinite(lng)||lat<-90||lat>90||lng<-180||lng>180){setFacilityAdderStatus('올바른 위도·경도를 입력해 주세요.',true);return}
-      const sameTypeCount=apt.facilities.filter(item=>item.type===type).length+1,label=document.getElementById('newFacilityLabel').value.trim()||(type==='receiver'?`수신반 ${sameTypeCount}`:`연결송수관 ${sameTypeCount}`);
+      const sameTypeCount=apt.facilities.filter(item=>item.type===type).length+1,label=document.getElementById('newFacilityLabel').value.trim()||(type==='receiver'?`수신반 ${sameTypeCount}`:`송수구 ${sameTypeCount}`);
       const id=`${apt.id}-U${Date.now().toString(36)}${Math.random().toString(36).slice(2,5)}`,facility={id,type,label,lat:Number(lat.toFixed(8)),lng:Number(lng.toFixed(8)),originalLat:Number(lat.toFixed(8)),originalLng:Number(lng.toFixed(8)),source:'웹앱 추가',added:true};
       apt.facilities.push(facility);addedFacilities.push({id,apartmentId:apt.id,type,label,lat:facility.lat,lng:facility.lng,originalLat:facility.originalLat,originalLng:facility.originalLng});
       savedCorrections[id]={lat:facility.lat,lng:facility.lng,modifiedAt:new Date().toISOString(),added:true};
@@ -681,7 +682,7 @@
     }
 
     function setDetail(type,title,subtitle,items,summary=''){
-      const color=type==='수신반'?'#1677d2':type==='연결송수관'?'#e33b42':'#203a60';
+      const color=type==='수신반'?'#198754':type==='송수구'?'#1677d2':'#203a60';
       const t=document.getElementById('detailType');t.textContent=type;t.style.color=color;t.hidden=!type;
       document.getElementById('detailTitle').textContent=title;document.getElementById('detailSubtitle').textContent=subtitle;
       const summaryEl=document.getElementById('detailSummary');summaryEl.textContent=summary;summaryEl.hidden=!summary;
