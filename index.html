@@ -10,8 +10,8 @@
   <style>
     :root {
       --navy:#152640; --navy-2:#203a60; --paper:#f4f7fb; --white:#fff;
-      --text:#172033; --muted:#627086; --line:#dce3ec; --receiver:#1677d2; --receiver-marker:#198754;
-      --siamese:#1677d2; --shadow:0 12px 34px rgba(19,38,66,.17);
+      --text:#172033; --muted:#627086; --line:#dce3ec; --receiver:#1677d2; --receiver-marker:#00a86b;
+      --siamese:#168bff; --shadow:0 12px 34px rgba(19,38,66,.17);
     }
     *{box-sizing:border-box}
     html,body{height:100%;margin:0;font-family:Pretendard,"Noto Sans KR","Apple SD Gothic Neo",sans-serif;color:var(--text);background:var(--paper)}
@@ -34,10 +34,10 @@
     .locate{height:44px;padding:0 14px;border:1px solid rgba(255,255,255,.3);border-radius:12px;background:rgba(255,255,255,.12);color:#fff;font-weight:700;white-space:nowrap}
     main{position:relative;min-height:0}
     #map{height:100%;width:100%;background:#dfe6ec}
-    .legend{position:absolute;z-index:600;left:10px;top:10px;background:rgba(255,255,255,.96);padding:10px 12px;border-radius:12px;box-shadow:0 6px 20px rgba(22,38,61,.16);font-size:.8rem;line-height:1.8;text-align:center}
+    .legend{position:absolute;z-index:600;left:10px;top:10px;background:rgba(240,242,245,.96);padding:10px 12px;border-radius:12px;box-shadow:0 6px 20px rgba(22,38,61,.16);font-size:.8rem;line-height:1.8;text-align:center}
     .legend-title{font-weight:800;border-bottom:1px solid var(--line);margin-bottom:5px}
     .dot{display:inline-block;width:11px;height:11px;margin-right:7px;vertical-align:-1px;box-shadow:0 0 0 1px rgba(0,0,0,.22)}
-    .dot.apt{background:var(--navy);border-radius:50%}.dot.receiver{background:var(--receiver-marker);border-radius:1px;transform:scale(.658);box-shadow:0 0 0 1px #000}.dot.siamese{position:relative;height:9.526px;background:#000;clip-path:polygon(50% 0,100% 100%,0 100%);box-shadow:none}.dot.siamese::after{content:'';position:absolute;inset:2px 2px 1px;background:var(--siamese);clip-path:polygon(50% 0,100% 100%,0 100%)}
+    .dot.apt{background:var(--navy);border-radius:50%}.dot.receiver{background:var(--receiver-marker);border-radius:1px;transform:scale(.658);box-shadow:0 0 0 1px #fff}.dot.siamese{position:relative;height:9.526px;background:#fff;clip-path:polygon(50% 0,100% 100%,0 100%);box-shadow:none}.dot.siamese::after{content:'';position:absolute;inset:2px 2px 1px;background:var(--siamese);clip-path:polygon(50% 0,100% 100%,0 100%)}.dot.bollard{position:relative;background:#e53935;border-radius:50%;box-shadow:0 0 0 1px #fff}.dot.bollard::before,.dot.bollard::after{content:'';position:absolute;left:50%;top:50%;width:7px;height:1.5px;border-radius:1px;background:#fff;transform-origin:center}.dot.bollard::before{transform:translate(-50%,-50%) rotate(45deg)}.dot.bollard::after{transform:translate(-50%,-50%) rotate(-45deg)}
     .drawer-backdrop{position:absolute;z-index:610;inset:0;background:rgba(8,20,38,.38);opacity:0;visibility:hidden;transition:opacity .25s ease,visibility .25s ease}
     .drawer-backdrop.open{opacity:1;visibility:visible}
     .list-panel{position:absolute;z-index:620;left:0;top:0;width:66.666vw;height:100%;max-height:none;overflow:auto;background:rgba(255,255,255,.985);box-shadow:14px 0 32px rgba(12,28,48,.25);padding:14px;transform:translateX(-105%);transition:transform .28s ease;border-radius:0 18px 18px 0}
@@ -96,7 +96,7 @@
     </header>
     <main>
       <div id="map" aria-label="구리시 공동주택 현황 지도"></div>
-      <div class="legend"><div class="legend-title">시설 범례</div><div><span class="dot siamese"></span>송수구</div><div><span class="dot receiver"></span>수신반</div></div>
+      <div class="legend"><div class="legend-title">시설 범례</div><div><span class="dot siamese"></span>송수구</div><div><span class="dot receiver"></span>수신반</div><div><span class="dot bollard"></span>볼라드</div></div>
       <div class="edit-tools-stack">
       <section class="edit-lock" aria-label="편집 도구 암호 입력">
         <input id="editPassword" type="password" inputmode="numeric" autocomplete="off" placeholder="편집 암호" aria-label="편집 암호">
@@ -288,7 +288,7 @@
       const canvas=document.createElement('canvas');canvas.width=16;canvas.height=16;
       const ctx=canvas.getContext('2d');
       ctx.beginPath();ctx.moveTo(8,.5);ctx.lineTo(15,12.624);ctx.lineTo(1,12.624);ctx.closePath();ctx.fillStyle='#fff';ctx.fill();
-      ctx.beginPath();ctx.moveTo(8,3.5);ctx.lineTo(12.402,11.124);ctx.lineTo(3.598,11.124);ctx.closePath();ctx.fillStyle='#1677d2';ctx.fill();
+      ctx.beginPath();ctx.moveTo(8,3.5);ctx.lineTo(12.402,11.124);ctx.lineTo(3.598,11.124);ctx.closePath();ctx.fillStyle='#168bff';ctx.fill();
       return ctx.getImageData(0,0,16,16);
     }
 
@@ -296,7 +296,7 @@
       const canvas=document.createElement('canvas');canvas.width=16;canvas.height=16;
       const ctx=canvas.getContext('2d');
       ctx.fillStyle='#fff';ctx.fillRect(3.394,3.394,9.213,9.213);
-      ctx.fillStyle='#198754';ctx.fillRect(4.894,4.894,6.213,6.213);
+      ctx.fillStyle='#00a86b';ctx.fillRect(4.894,4.894,6.213,6.213);
       return ctx.getImageData(0,0,16,16);
     }
 
@@ -695,7 +695,7 @@
     }
 
     function setDetail(type,title,subtitle,items,summary=''){
-      const color=type==='수신반'?'#198754':type==='송수구'?'#1677d2':'#203a60';
+      const color=type==='수신반'?'#00a86b':type==='송수구'?'#168bff':'#203a60';
       const t=document.getElementById('detailType');t.textContent=type;t.style.color=color;t.hidden=!type;
       document.getElementById('detailTitle').textContent=title;document.getElementById('detailSubtitle').textContent=subtitle;
       const summaryEl=document.getElementById('detailSummary');summaryEl.textContent=summary;summaryEl.hidden=!summary;
