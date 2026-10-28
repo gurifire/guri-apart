@@ -10,8 +10,8 @@
   <style>
     :root {
       --navy:#152640; --navy-2:#203a60; --paper:#f4f7fb; --white:#fff;
-      --text:#172033; --muted:#627086; --line:#dce3ec; --receiver:#1677d2; --receiver-marker:#00b050;
-      --siamese:#007bff; --shadow:0 12px 34px rgba(19,38,66,.17);
+      --text:#172033; --muted:#627086; --line:#dce3ec; --receiver:#1677d2; --receiver-marker:#D000D6;
+      --siamese:#009DFF; --shadow:0 12px 34px rgba(19,38,66,.17);
     }
     *{box-sizing:border-box}
     html,body{height:100%;margin:0;font-family:Pretendard,"Noto Sans KR","Apple SD Gothic Neo",sans-serif;color:var(--text);background:var(--paper)}
@@ -289,7 +289,7 @@
       const canvas=document.createElement('canvas');canvas.width=128;canvas.height=128;
       const ctx=canvas.getContext('2d');ctx.scale(4,4);
       ctx.beginPath();ctx.moveTo(16,7.5);ctx.lineTo(24.5,24.5);ctx.lineTo(7.5,24.5);ctx.closePath();ctx.fillStyle='#fff';ctx.fill();
-      ctx.beginPath();ctx.moveTo(16,9.5);ctx.lineTo(22.5,22.5);ctx.lineTo(9.5,22.5);ctx.closePath();ctx.fillStyle='#007bff';ctx.fill();
+      ctx.beginPath();ctx.moveTo(16,9.5);ctx.lineTo(22.5,22.5);ctx.lineTo(9.5,22.5);ctx.closePath();ctx.fillStyle='#009DFF';ctx.fill();
       return ctx.getImageData(0,0,128,128);
     }
 
@@ -297,7 +297,7 @@
       const canvas=document.createElement('canvas');canvas.width=128;canvas.height=128;
       const ctx=canvas.getContext('2d');ctx.scale(4,4);
       ctx.fillStyle='#fff';ctx.fillRect(7.5,7.5,17,17);
-      ctx.fillStyle='#00b050';ctx.fillRect(9.5,9.5,13,13);
+      ctx.fillStyle='#D000D6';ctx.fillRect(9.5,9.5,13,13);
       return ctx.getImageData(0,0,128,128);
     }
 
