@@ -797,7 +797,7 @@
     const apartmentDrawer=document.getElementById('apartmentDrawer');
     const drawerBackdrop=document.getElementById('drawerBackdrop');
     const menuBtn=document.getElementById('menuBtn');
-    function openApartmentDrawer(){apartmentDrawer.classList.add('open');drawerBackdrop.classList.add('open');apartmentDrawer.setAttribute('aria-hidden','false');drawerBackdrop.setAttribute('aria-hidden','false');menuBtn.setAttribute('aria-expanded','true')}
+    function openApartmentDrawer(){renderList(document.getElementById('searchInput').value);apartmentDrawer.classList.add('open');drawerBackdrop.classList.add('open');apartmentDrawer.setAttribute('aria-hidden','false');drawerBackdrop.setAttribute('aria-hidden','false');menuBtn.setAttribute('aria-expanded','true');requestAnimationFrame(()=>{const active=document.querySelector('#aptList .apt-card.active');if(active)apartmentDrawer.scrollTop=active.offsetTop-(apartmentDrawer.clientHeight-active.offsetHeight)/2})}
     function closeApartmentDrawer(){apartmentDrawer.classList.remove('open');drawerBackdrop.classList.remove('open');apartmentDrawer.setAttribute('aria-hidden','true');drawerBackdrop.setAttribute('aria-hidden','true');menuBtn.setAttribute('aria-expanded','false')}
     menuBtn.addEventListener('click',()=>apartmentDrawer.classList.contains('open')?closeApartmentDrawer():openApartmentDrawer());
     document.getElementById('drawerClose').addEventListener('click',closeApartmentDrawer);
