@@ -929,6 +929,18 @@
       setTimeout(fin,3000);
     }).then(function(){return wait(700)});
   }
+  /* 저장 중 가림막: 지도 이동 과정을 가리고, 촬영 순간에만 잠깐 걷어냄 */
+  var CURTAIN_RGB=[11,35,64];
+  function curtain(on,msg){
+    var c=document.getElementById('captureCurtain');
+    if(!c){c=document.createElement('div');c.id='captureCurtain';
+      c.setAttribute('style','position:fixed;inset:0;z-index:2147483647;background:rgb('+CURTAIN_RGB.join(',')+');color:#fff;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;font-family:inherit;text-align:center');
+      c.innerHTML='<div style="font-size:34px">📷</div><div id="captureCurtainMsg" style="font-size:18px;font-weight:800"></div><div style="font-size:13px;opacity:.75">잠시만 기다려 주세요 · 화면이 잠깐 깜빡일 수 있습니다</div>';
+      document.body.appendChild(c);}
+    if(msg!=null)document.getElementById('captureCurtainMsg').textContent=msg;
+    c.style.display=on?'flex':'none';
+  }
+  function removeCurtain(){var c=document.getElementById('captureCurtain');if(c)c.remove();}
   function captureDisplay(){
     var m=getMap(),mapEl=document.getElementById('map');
     var dpr=window.devicePixelRatio||1;
@@ -954,19 +966,37 @@
       btn.style.visibility='';document.title=oldTitle;
     }
     btn.style.visibility='hidden';
-    return navigator.mediaDevices.getDisplayMedia({video:{displaySurface:'browser',width:{ideal:tw},height:{ideal:th},frameRate:{ideal:5,max:15}},audio:false,preferCurrentTab:true,selfBrowserSurface:'include'}).then(function(st){
+    return navigator.mediaDevices.getDisplayMedia({video:{displaySurface:'browser',width:{ideal:tw},height:{ideal:th},frameRate:{ideal:30,max:30}},audio:false,preferCurrentTab:true,selfBrowserSurface:'include'}).then(function(st){
       stream=st;var track=st.getVideoTracks()[0];
       try{track.contentHint='detail';}catch(e){}
       var v=document.createElement('video');v.muted=true;v.playsInline=true;v.srcObject=st;
-      function grab(){
-        var p=(window.ImageCapture&&track.readyState==='live')?new ImageCapture(track).grabFrame().catch(function(){return null}):Promise.resolve(null);
-        return p.then(function(b){
-          if(b) return b;
-          var c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;c.getContext('2d').drawImage(v,0,0);return c;
+      function nextFrame(){
+        return new Promise(function(r){
+          var done=false;function fin(){if(!done){done=true;r();}}
+          if(v.requestVideoFrameCallback)v.requestVideoFrameCallback(fin);
+          setTimeout(fin,120);
         });
       }
+      function snap(){var c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;c.getContext('2d').drawImage(v,0,0);return c;}
+      function grab(){return nextFrame().then(snap);}
+      function hasCurtain(c,mr2){ /* 찍힌 장면에 가림막이 남아 있는지 검사 */
+        try{var x=c.getContext('2d'),iw2=window.innerWidth,sc=c.width/iw2,hit=0;
+          [[.2,.25],[.8,.25],[.2,.8],[.8,.8]].forEach(function(pt){
+            var px=Math.floor((mr2.left+mr2.width*pt[0])*sc),py=Math.floor((mr2.top+mr2.height*pt[1])*sc);
+            var d=x.getImageData(px,py,1,1).data;
+            if(Math.abs(d[0]-CURTAIN_RGB[0])<8&&Math.abs(d[1]-CURTAIN_RGB[1])<8&&Math.abs(d[2]-CURTAIN_RGB[2])<8)hit++;});
+          return hit>=3;}catch(e){return false}
+      }
+      function grabClean(mr2){ /* 가림막을 걷고 → 화면 반영 → 새 프레임 촬영 → 다시 가림막 */
+        curtain(false);
+        return new Promise(function(r){requestAnimationFrame(function(){requestAnimationFrame(r)})}).then(function(){
+          var tries=0;
+          function attempt(){return nextFrame().then(function(){var c=snap();if(hasCurtain(c,mr2)&&tries++<20)return attempt();return c;});}
+          return attempt();
+        }).then(function(c){curtain(true);return c;},function(e){curtain(true);throw e;});
+      }
       document.title='고화질 저장 중... (잠시 기다려 주세요)';
-      return v.play().then(function(){return wait(1200)}).then(grab).then(function(f0){
+      return v.play().then(function(){return wait(1200)}).then(grab).then(grab).then(function(f0){
         var iw=window.innerWidth,ih=window.innerHeight;
         function fit(fr){var sc=Math.min(fr.width/iw,fr.height/ih);return {sc:sc,ox:(fr.width-iw*sc)/2,oy:(fr.height-ih*sc)/2};}
         var g0=fit(f0),s=g0.sc;
@@ -986,6 +1016,7 @@
         /* 제목줄 (지도 위쪽 영역) */
         ctx.drawImage(f0,g0.ox+X0*s,g0.oy,(X1-X0)*s,mr.top*s,0,0,out.width,Math.round(mr.top*u));
         orig={z:z0,c:m.getCenter()};
+        curtain(true,'고화질 저장 준비 중…');
         hideOverlays();
         var Q=[[0,0],[1,0],[0,1],[1,1]];
         if(isNaverMap(m)) m.setZoom(z0+1,false); else m.jumpTo({center:orig.c,zoom:z0+1});
@@ -1000,9 +1031,10 @@
           var chain=Promise.resolve();
           targets.forEach(function(t){
             chain=chain.then(function(){
+              curtain(true,'고화질 저장 중… '+(targets.indexOf(t)+1)+' / 4');
               if(isNaverMap(m)) m.setCenter(t.c); else m.jumpTo({center:t.c});
               return waitIdle(m);
-            }).then(grab).then(function(fr){
+            }).then(function(){return grabClean(mr);}).then(function(fr){
               var g=fit(fr),ss=g.sc;
               /* 조각을 결과 이미지의 지도 영역 해당 칸에 배치 (가로·세로 2배, 정수 픽셀로 맞물림) */
               /* 조각끼리 맞닿는 쪽은 M, 화면 바깥쪽은 E만 버리고 사용 */
@@ -1029,10 +1061,16 @@
       });
     }).then(function(img){
       restoreAll();
+      if(document.getElementById('captureCurtain')){
+        curtain(true,'✅ 저장 완료');
+        return waitIdle(getMap()).then(function(){removeCurtain();return img;});
+      }
+      return img;
+    }).then(function(img){
       var c=img;
       if(!(c instanceof HTMLCanvasElement)){var t=document.createElement('canvas');t.width=c.width;t.height=c.height;t.getContext('2d').drawImage(c,0,0);c=t;}
       return new Promise(function(r){c.toBlob(r,'image/png')});
-    },function(e){restoreAll();throw e;}).then(function(blob){
+    },function(e){restoreAll();removeCurtain();throw e;}).then(function(blob){
       if(!blob) throw new Error('empty');
       var url=URL.createObjectURL(blob),a=document.createElement('a');
       a.href=url;a.download='구리소방지도_고화질_'+stamp()+'.png';document.body.appendChild(a);a.click();a.remove();
