@@ -984,6 +984,23 @@
       });
     });
   }
+  /* 2차 안전장치: 지도 영역에 남은 단색 바탕(빈 배경)을 투명하게 → 아래 배경지도·윤곽선이 보이게 */
+  function keyOutBackdrop(layer,rect,k){
+    try{
+      var lx=Math.max(0,Math.round(rect.left*k)),ly=Math.max(0,Math.round(rect.top*k));
+      var lw=Math.min(layer.width-lx,Math.round(rect.width*k)),lh=Math.min(layer.height-ly,Math.round(rect.height*k));
+      if(lw<=0||lh<=0) return;
+      var c=layer.getContext('2d'),img=c.getImageData(lx,ly,lw,lh),d=img.data,cnt={},tot=0,best=null,bn=0;
+      for(var y=0;y<lh;y+=7)for(var x=0;x<lw;x+=7){var i=(y*lw+x)*4;if(d[i+3]<250)continue;var key=(d[i]>>2)+','+(d[i+1]>>2)+','+(d[i+2]>>2);cnt[key]=(cnt[key]||0)+1;tot++;}
+      for(var kk in cnt)if(cnt[kk]>bn){bn=cnt[kk];best=kk;}
+      if(!best||bn<tot*0.3) return;
+      var bc=best.split(',').map(function(v){return v*4+2});
+      for(var j=0;j<d.length;j+=4){
+        if(Math.abs(d[j]-bc[0])<=7&&Math.abs(d[j+1]-bc[1])<=7&&Math.abs(d[j+2]-bc[2])<=7) d[j+3]=0;
+      }
+      c.putImageData(img,lx,ly);
+    }catch(e){}
+  }
   function capturePage(){
     var mapEl=document.getElementById('map');
     var saved=[];
@@ -1012,6 +1029,15 @@
             var m=doc.getElementById('map'); if(!m) return;
             var mr=m.getBoundingClientRect(),area=mr.width*mr.height;
             m.style.setProperty('background','transparent','important');
+            /* 지도를 감싸는 상위 요소(body·main 등) 배경을 투명하게 → 아래 합성한 배경지도가 보이도록 */
+            for(var a=m.parentElement;a;a=a.parentElement){a.style.setProperty('background','transparent','important');}
+            var win=doc.defaultView||window;
+            Array.from(m.querySelectorAll('*')).forEach(function(el){
+              if(el.closest('.legend')) return;
+              var cs=win.getComputedStyle(el),r0=el.getBoundingClientRect();
+              /* 글자 없는 큰 판(지도 바탕판)은 투명 처리, 동 번호·시설 기호는 유지 */
+              if(r0.width>=120&&r0.height>=120&&!(el.textContent||'').trim()&&cs.backgroundColor!=='rgba(0, 0, 0, 0)') el.style.setProperty('background','transparent','important');
+            });
             Array.from(m.querySelectorAll('*')).forEach(function(el){
               if(el.closest('.legend')) return;
               if(el.tagName==='IMG'&&!/^data:/.test(el.src||'')&&el.getBoundingClientRect().width>=200){el.style.setProperty('visibility','hidden','important');return;}
@@ -1021,6 +1047,7 @@
           }});
       });
     }).then(function(layer){
+      if(rect&&tilesOk) keyOutBackdrop(layer,rect,k);
       ctx.drawImage(layer,0,0,out.width,out.height);
       if(tilesOk&&rect){ /* 배경지도 출처 표기 */
         var fs=10*k;ctx.font=fs+'px sans-serif';var t='\u00a9 OpenStreetMap',tw=ctx.measureText(t).width;
