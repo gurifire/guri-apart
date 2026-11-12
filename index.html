@@ -933,16 +933,18 @@
     var m=getMap(),mapEl=document.getElementById('map');
     var dpr=window.devicePixelRatio||1;
     var tw=Math.round(window.innerWidth*dpr),th=Math.round(window.innerHeight*dpr);
-    var hidden=[],ctrlOpts=null,stream=null,orig=null,oldTitle=document.title;
+    var hidden=[],ctrlOpts=null,stream=null,orig=null,oldTitle=document.title,shadowSaved=null;
     function hideOverlays(){ /* 지도 위 범례·패널·조작버튼을 촬영 동안만 숨김 */
       var list=[];
       if(mapEl&&mapEl.parentElement) Array.from(mapEl.parentElement.children).forEach(function(c){if(c!==mapEl)list.push(c)});
       if(mapEl) Array.from(mapEl.querySelectorAll('.maplibregl-control-container')).forEach(function(c){list.push(c)});
       list.forEach(function(el){hidden.push({el:el,v:el.style.visibility});el.style.visibility='hidden';});
+      var hd=document.querySelector('header');if(hd){shadowSaved={el:hd,v:hd.style.boxShadow};hd.style.boxShadow='none';}
       if(isNaverMap(m)){try{ctrlOpts={zoomControl:m.getOptions('zoomControl'),logoControl:m.getOptions('logoControl'),mapDataControl:m.getOptions('mapDataControl'),scaleControl:m.getOptions('scaleControl')};m.setOptions({zoomControl:false,logoControl:false,mapDataControl:false,scaleControl:false});}catch(e){ctrlOpts=null}}
     }
     function restoreAll(){
       hidden.forEach(function(d){d.el.style.visibility=d.v});hidden=[];
+      if(shadowSaved){shadowSaved.el.style.boxShadow=shadowSaved.v;shadowSaved=null;}
       if(ctrlOpts&&isNaverMap(m)){try{m.setOptions(ctrlOpts)}catch(e){}}ctrlOpts=null;
       if(orig&&m){try{
         if(isNaverMap(m)){m.setZoom(orig.z,false);m.setCenter(orig.c);}
@@ -952,7 +954,7 @@
       btn.style.visibility='';document.title=oldTitle;
     }
     btn.style.visibility='hidden';
-    return navigator.mediaDevices.getDisplayMedia({video:{displaySurface:'browser',width:{ideal:Math.max(tw,1920),max:7680},height:{ideal:Math.max(th,1080),max:4320},frameRate:{ideal:5,max:15}},audio:false,preferCurrentTab:true,selfBrowserSurface:'include'}).then(function(st){
+    return navigator.mediaDevices.getDisplayMedia({video:{displaySurface:'browser',width:{ideal:tw},height:{ideal:th},frameRate:{ideal:5,max:15}},audio:false,preferCurrentTab:true,selfBrowserSurface:'include'}).then(function(st){
       stream=st;var track=st.getVideoTracks()[0];
       try{track.contentHint='detail';}catch(e){}
       var v=document.createElement('video');v.muted=true;v.playsInline=true;v.srcObject=st;
@@ -965,17 +967,24 @@
       }
       document.title='고화질 저장 중... (잠시 기다려 주세요)';
       return v.play().then(function(){return wait(1200)}).then(grab).then(function(f0){
-        var fw=f0.width,fh=f0.height,s=fw/window.innerWidth;
+        var iw=window.innerWidth,ih=window.innerHeight;
+        function fit(fr){var sc=Math.min(fr.width/iw,fr.height/ih);return {sc:sc,ox:(fr.width-iw*sc)/2,oy:(fr.height-ih*sc)/2};}
+        var g0=fit(f0),s=g0.sc;
         var mr=mapEl?mapEl.getBoundingClientRect():null;
         var leg=document.querySelector('main .legend'),lr=leg?leg.getBoundingClientRect():null;
         var maxZ=21;try{maxZ=isNaverMap(m)?(m.getMaxZoom?m.getMaxZoom():21):(m.getMaxZoom?m.getMaxZoom():20);}catch(e){}
         var z0=null;try{z0=m?m.getZoom():null}catch(e){}
         /* 지도 확대가 불가하면 한 장 저장 */
         if(!m||!mr||mr.width<50||z0===null||z0+1>maxZ){return f0;}
-        var W=mr.width,H=mr.height,K=2;
-        var out=document.createElement('canvas');out.width=Math.round(fw*K);out.height=Math.round(fh*K);
+        var W=mr.width,H=mr.height,K=2,M=10; /* M: 조각끼리 겹치는 여유(가장자리 잡티 제거) */
+        /* 결과 이미지 영역(원래 화면 좌표): 지도 가장자리 잡티 몇 px만 제외 */
+        var E=2,u=s*K;
+        var X0=mr.left+(M+E)/2,X1=mr.right-(M+E)/2,Y0=mr.top+M/2,Y1=mr.bottom-(M+E)/2;
+        var out=document.createElement('canvas');out.width=Math.round((X1-X0)*u);out.height=Math.round((mr.top+Y1-Y0)*u);
         var ctx=out.getContext('2d');ctx.imageSmoothingQuality='high';
-        ctx.drawImage(f0,0,0,out.width,out.height); /* 제목줄 등 지도 밖 영역 */
+        ctx.fillStyle='#dfe6ec';ctx.fillRect(0,0,out.width,out.height);
+        /* 제목줄 (지도 위쪽 영역) */
+        ctx.drawImage(f0,g0.ox+X0*s,g0.oy,(X1-X0)*s,mr.top*s,0,0,out.width,Math.round(mr.top*u));
         orig={z:z0,c:m.getCenter()};
         hideOverlays();
         var Q=[[0,0],[1,0],[0,1],[1,1]];
@@ -984,9 +993,9 @@
           var targets;
           if(isNaverMap(m)){
             var proj=m.getProjection(),co=proj.fromCoordToOffset(orig.c);
-            targets=Q.map(function(q){return {q:q,c:proj.fromOffsetToCoord(new naver.maps.Point(co.x+q[0]*W-W/2,co.y+q[1]*H-H/2))}});
+            targets=Q.map(function(q){return {q:q,c:proj.fromOffsetToCoord(new naver.maps.Point(co.x+(q[0]-0.5)*(W-2*M),co.y+(q[1]-0.5)*(H-2*M)))}});
           }else{
-            targets=Q.map(function(q){return {q:q,c:m.unproject([q[0]*W,q[1]*H])}});
+            targets=Q.map(function(q){return {q:q,c:m.unproject([W/2+(q[0]-0.5)*(W-2*M),H/2+(q[1]-0.5)*(H-2*M)])}});
           }
           var chain=Promise.resolve();
           targets.forEach(function(t){
@@ -994,19 +1003,25 @@
               if(isNaverMap(m)) m.setCenter(t.c); else m.jumpTo({center:t.c});
               return waitIdle(m);
             }).then(grab).then(function(fr){
-              var ss=fr.width/window.innerWidth;
-              /* 조각을 결과 이미지의 지도 영역 해당 칸에 배치 (가로·세로 2배) */
-              ctx.drawImage(fr,mr.left*ss,mr.top*ss,W*ss,H*ss,
-                mr.left*s*K+t.q[0]*W*s*K/2, mr.top*s*K+t.q[1]*H*s*K/2, W*s*K/2, H*s*K/2);
+              var g=fit(fr),ss=g.sc;
+              /* 조각을 결과 이미지의 지도 영역 해당 칸에 배치 (가로·세로 2배, 정수 픽셀로 맞물림) */
+              /* 조각끼리 맞닿는 쪽은 M, 화면 바깥쪽은 E만 버리고 사용 */
+              var qx=t.q[0],qy=t.q[1];
+              var sx0=qx?M:E,sx1=qx?W-E:W-M,sy0=qy?M:0,sy1=qy?H-E:H-M;
+              function ox(sx){return mr.left+W/2+(sx-W/2+(qx-0.5)*(W-2*M))/2}
+              function oy(sy){return mr.top+H/2+(sy-H/2+(qy-0.5)*(H-2*M))/2}
+              var dx0=Math.round((ox(sx0)-X0)*u),dx1=Math.round((ox(sx1)-X0)*u);
+              var dy0=Math.round(mr.top*u+(oy(sy0)-Y0)*u),dy1=Math.round(mr.top*u+(oy(sy1)-Y0)*u);
+              ctx.drawImage(fr,g.ox+(mr.left+sx0)*ss,g.oy+(mr.top+sy0)*ss,(sx1-sx0)*ss,(sy1-sy0)*ss,dx0,dy0,dx1-dx0,dy1-dy0);
             });
           });
           return chain;
         }).then(function(){
           /* 범례를 원래 위치에 다시 합성 */
-          if(lr&&lr.width>0) ctx.drawImage(f0,lr.left*s,lr.top*s,lr.width*s,lr.height*s,lr.left*s*K,lr.top*s*K,lr.width*s*K,lr.height*s*K);
+          if(lr&&lr.width>0) ctx.drawImage(f0,g0.ox+lr.left*s,g0.oy+lr.top*s,lr.width*s,lr.height*s,Math.round((lr.left-mr.left)*u),Math.round(lr.top*u),Math.round(lr.width*u),Math.round(lr.height*u));
           /* 지도 출처 표기 */
           var txt=isNaverMap(m)?'© NAVER Corp.':'© OpenStreetMap',fs=Math.round(12*s*K);
-          ctx.font=fs+'px sans-serif';var tw2=ctx.measureText(txt).width,bx=(mr.right)*s*K-tw2-fs*0.8,by=(mr.bottom)*s*K-fs*0.5;
+          ctx.font=fs+'px sans-serif';var tw2=ctx.measureText(txt).width,bx=out.width-tw2-fs*0.8,by=out.height-fs*0.5;
           ctx.fillStyle='rgba(255,255,255,.85)';ctx.fillRect(bx-fs*0.3,by-fs,tw2+fs*0.6,fs*1.35);
           ctx.fillStyle='#333';ctx.fillText(txt,bx,by);
           return out;
