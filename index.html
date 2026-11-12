@@ -892,212 +892,52 @@
   var isIOS=/iPhone|iPad|iPod/i.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
   var isAndroid=/Android/i.test(ua);
   var isMobile=isIOS||isAndroid||/Mobile/i.test(ua);
-  var canTab=!isMobile&&navigator.mediaDevices&&navigator.mediaDevices.getDisplayMedia;
-  var busy=false;
-  function pad(n){return String(n).padStart(2,'0')}
-  function fname(){var d=new Date();return '구리소방지도_'+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+'_'+pad(d.getHours())+pad(d.getMinutes())+pad(d.getSeconds())+'.png';}
-  function shotGuide(){
-    if(isIOS) return ['<b>측면 버튼 + 음량 높이기</b> 동시에 누르기','(홈 버튼 모델: <b>홈 + 측면 버튼</b>)'];
-    if(isAndroid) return ['<b>전원 + 음량 낮추기</b> 동시에 누르기','(갤럭시는 손날로 화면을 밀어도 캡처)'];
-    if(isMobile) return ['기기의 스크린샷 버튼 조합을 눌러 주세요'];
-    return ['<b>Windows + Shift + S</b> 로 영역 선택','(Mac: <b>Shift + Command + 4</b>)'];
+  function guideText(){
+    if(isIOS) return {t:'아이폰 스크린샷 방법',l:['<b>측면 버튼 + 음량 높이기</b> 버튼을 동시에 눌렀다 떼기','(홈 버튼 모델: <b>홈 + 측면 버튼</b> 동시에)']};
+    if(isAndroid) return {t:'휴대폰 스크린샷 방법',l:['<b>전원 + 음량 낮추기</b> 버튼을 동시에 눌렀다 떼기','(갤럭시는 손날로 화면을 밀어도 캡처)']};
+    if(isMobile) return {t:'스크린샷 방법',l:['기기의 스크린샷 버튼 조합을 눌러 주세요']};
+    return {t:'PC 화면 캡처 방법',l:['<b>Windows + Shift + S</b> 를 눌러 영역을 선택하세요','(Mac: <b>Shift + Command + 4</b>)']};
   }
-  /* 상태 알림 (지원반 앱 방식: 저장 중 → 저장 완료) */
-  function toast(msg,ms){
-    var t=document.getElementById('captureToast');
-    if(!t){t=document.createElement('div');t.id='captureToast';
-      t.setAttribute('style','position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:100000;background:rgba(7,26,50,.92);color:#fff;padding:10px 16px;border-radius:999px;font-size:14px;font-weight:700;box-shadow:0 6px 18px rgba(0,0,0,.25);white-space:nowrap');
-      document.body.appendChild(t);}
-    t.textContent=msg;t.style.display='block';
-    clearTimeout(t._h);if(ms)t._h=setTimeout(function(){t.style.display='none'},ms);
+  function showGuide(){
+    if(document.getElementById('captureGuide')) return;
+    var g=guideText();
+    var bg=document.createElement('div'); bg.id='captureGuide';
+    bg.setAttribute('style','position:fixed;inset:0;z-index:99999;background:rgba(7,26,50,.55);display:flex;align-items:center;justify-content:center;padding:16px');
+    bg.innerHTML='<div role="dialog" aria-modal="true" style="max-width:340px;width:100%;background:#fff;color:#0c2c50;border-radius:16px;padding:20px 18px 16px;box-shadow:0 12px 32px rgba(0,0,0,.3);text-align:center;font-size:15px;line-height:1.55">'
+      +'<div style="font-size:30px;margin-bottom:4px">📷</div>'
+      +'<div style="font-weight:800;font-size:17px;margin-bottom:10px">'+g.t+'</div>'
+      +g.l.map(function(s){return '<div style="margin:3px 0">'+s+'</div>'}).join('')
+      +'<div style="margin-top:10px;color:#5b6b7d;font-size:13px">확인을 누르면 안내창이 닫힙니다.<br>닫힌 뒤 위 방법으로 캡처하세요.</div>'
+      +'<button type="button" id="captureGuideOk" style="margin-top:14px;width:100%;height:44px;border:0;border-radius:12px;background:#0c2c50;color:#fff;font-weight:800;font-size:15px">확인</button></div>';
+    document.body.appendChild(bg);
+    function close(){bg.remove();}
+    document.getElementById('captureGuideOk').addEventListener('click',close);
+    bg.addEventListener('click',function(e){if(e.target===bg)close();});
   }
-  function hideToast(){var t=document.getElementById('captureToast');if(t)t.style.display='none';}
-  /* 저장: 아이폰은 공유창(사진 저장), 그 외는 다운로드 */
-  function save(blob){
-    var name=fname();
-    try{var file=new File([blob],name,{type:'image/png'});
-      if(isIOS&&navigator.canShare&&navigator.canShare({files:[file]})){
-        return navigator.share({files:[file],title:'화면 캡처'}).catch(function(e){if(!(e&&e.name==='AbortError'))download(blob,name);});
-      }}catch(e){}
-    download(blob,name);
-  }
-  function download(blob,name){
-    var url=URL.createObjectURL(blob),a=document.createElement('a');
-    a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
-    setTimeout(function(){URL.revokeObjectURL(url)},4000);
-  }
-  function loadLib(){
-    if(window.html2canvas) return Promise.resolve(window.html2canvas);
-    return new Promise(function(res,rej){
-      var s=document.createElement('script');
-      s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-      var t=setTimeout(function(){rej(new Error('timeout'))},15000);
-      s.onload=function(){clearTimeout(t);res(window.html2canvas)};s.onerror=function(){clearTimeout(t);rej(new Error('lib'))};
-      document.head.appendChild(s);
-    });
-  }
-  /* ── 원터치 저장: 배경지도 직접 합성 ──
-     ① 현재 화면 범위에 맞춘 OpenStreetMap 배경(외부 그리기 허용) 
-     ② 지도 위 동 윤곽선(SVG) 그대로 복사
-     ③ 헤더·범례·동 번호·상세창(지원반 앱 방식 html2canvas) */
-  function loadImg(src,cors){return new Promise(function(r){var i=new Image();if(cors)i.crossOrigin='anonymous';i.onload=function(){r(i)};i.onerror=function(){r(null)};i.src=src;setTimeout(function(){r(null)},8000);});}
-  function viewBounds(){
-    try{
-      if(typeof map==='undefined'||!map||!map.getBounds) return null;
-      var b=map.getBounds();
-      if(b.getNE){var ne=b.getNE(),sw=b.getSW();return {n:ne.lat(),e:ne.lng(),s:sw.lat(),w:sw.lng()};}
-      if(b.getNorthEast){var a=b.getNorthEast(),c=b.getSouthWest();return {n:a.lat,e:a.lng,s:c.lat,w:c.lng};}
-    }catch(e){}
-    return null;
-  }
-  function mx(lng){return (lng+180)/360;}
-  function my(lat){var r=lat*Math.PI/180;return (1-Math.log(Math.tan(r)+1/Math.cos(r))/Math.PI)/2;}
-  function drawBaseTiles(ctx,rect,k){
-    var b=viewBounds(); if(!b) return Promise.resolve(false);
-    var x0=mx(b.w),x1=mx(b.e),y0=my(b.n),y1=my(b.s); if(!(x1>x0&&y1>y0)) return Promise.resolve(false);
-    var W=rect.width*k,H=rect.height*k;
-    var z=Math.max(1,Math.min(19,Math.round(Math.log2(W/(256*(x1-x0))))));
-    var n=Math.pow(2,z),tx0=Math.floor(x0*n),tx1=Math.floor(x1*n),ty0=Math.floor(y0*n),ty1=Math.floor(y1*n);
-    if((tx1-tx0+1)*(ty1-ty0+1)>80) return Promise.resolve(false);
-    var jobs=[],ox=rect.left*k,oy=rect.top*k;
-    for(var tx=tx0;tx<=tx1;tx++)for(var ty=ty0;ty<=ty1;ty++)(function(tx,ty){
-      jobs.push(loadImg('https://tile.openstreetmap.org/'+z+'/'+tx+'/'+ty+'.png',true).then(function(img){
-        if(!img) return 0;
-        var px=ox+(tx/n-x0)/(x1-x0)*W,py=oy+(ty/n-y0)/(y1-y0)*H,pw=W/(n*(x1-x0)),ph=H/(n*(y1-y0));
-        ctx.drawImage(img,px,py,pw+0.5,ph+0.5);return 1;
-      }));
-    })(tx,ty);
-    return Promise.all(jobs).then(function(r){return r.reduce(function(a,b){return a+b},0)>0;});
-  }
-  function drawMapShapes(ctx,mapEl,k){
-    var svgs=Array.from(mapEl.querySelectorAll('svg')).filter(function(s){var r=s.getBoundingClientRect();return r.width>30&&r.height>30&&!s.closest('.legend');});
-    return Promise.all(svgs.map(function(svg){
-      var r=svg.getBoundingClientRect(),cl=svg.cloneNode(true);
-      cl.setAttribute('xmlns','http://www.w3.org/2000/svg');cl.setAttribute('width',r.width);cl.setAttribute('height',r.height);
-      if(!cl.getAttribute('viewBox')&&svg.viewBox&&svg.viewBox.baseVal&&svg.viewBox.baseVal.width)cl.setAttribute('viewBox',[svg.viewBox.baseVal.x,svg.viewBox.baseVal.y,svg.viewBox.baseVal.width,svg.viewBox.baseVal.height].join(' '));
-      var url=URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(cl)],{type:'image/svg+xml'}));
-      return loadImg(url,false).then(function(img){URL.revokeObjectURL(url);if(img)try{ctx.drawImage(img,r.left*k,r.top*k,r.width*k,r.height*k)}catch(e){}});
-    })).then(function(){
-      Array.from(mapEl.querySelectorAll('canvas')).forEach(function(c){
-        var r=c.getBoundingClientRect(); if(r.width<30||r.height<30) return;
-        try{var t=document.createElement('canvas');t.width=t.height=1;t.getContext('2d').drawImage(c,0,0,1,1);t.toDataURL();ctx.drawImage(c,r.left*k,r.top*k,r.width*k,r.height*k);}catch(e){}
-      });
-    });
-  }
-  /* 2차 안전장치: 지도 영역에 남은 단색 바탕(빈 배경)을 투명하게 → 아래 배경지도·윤곽선이 보이게 */
-  function keyOutBackdrop(layer,rect,k){
-    try{
-      var lx=Math.max(0,Math.round(rect.left*k)),ly=Math.max(0,Math.round(rect.top*k));
-      var lw=Math.min(layer.width-lx,Math.round(rect.width*k)),lh=Math.min(layer.height-ly,Math.round(rect.height*k));
-      if(lw<=0||lh<=0) return;
-      var c=layer.getContext('2d'),img=c.getImageData(lx,ly,lw,lh),d=img.data,cnt={},tot=0,best=null,bn=0;
-      for(var y=0;y<lh;y+=7)for(var x=0;x<lw;x+=7){var i=(y*lw+x)*4;if(d[i+3]<250)continue;var key=(d[i]>>2)+','+(d[i+1]>>2)+','+(d[i+2]>>2);cnt[key]=(cnt[key]||0)+1;tot++;}
-      for(var kk in cnt)if(cnt[kk]>bn){bn=cnt[kk];best=kk;}
-      if(!best||bn<tot*0.3) return;
-      var bc=best.split(',').map(function(v){return v*4+2});
-      for(var j=0;j<d.length;j+=4){
-        if(Math.abs(d[j]-bc[0])<=7&&Math.abs(d[j+1]-bc[1])<=7&&Math.abs(d[j+2]-bc[2])<=7) d[j+3]=0;
-      }
-      c.putImageData(img,lx,ly);
-    }catch(e){}
-  }
-  function capturePage(){
-    var mapEl=document.getElementById('map');
-    var saved=[];
-    function restore(){saved.forEach(function(d){if(d.prev!==null)d.el.setAttribute('style',d.prev);else d.el.removeAttribute('style');});btn.style.visibility='';}
-    btn.style.visibility='hidden';
-    var els=[document.body].concat(Array.from(document.body.querySelectorAll('*')));
-    els.forEach(function(el){
-      if(mapEl&&(mapEl===el||mapEl.contains(el))&&!el.closest('.legend')) return; /* 지도 내부는 건드리지 않음 */
-      if(el.id==='captureToast') return;
-      var cs=getComputedStyle(el),prev=el.getAttribute('style');
-      saved.push({el:el,prev:prev});
-      el.setAttribute('style',(prev?prev+';':'')+'color:'+cs.color+' !important;background-color:'+cs.backgroundColor+' !important;border-color:'+cs.borderTopColor+' '+cs.borderRightColor+' '+cs.borderBottomColor+' '+cs.borderLeftColor+' !important;opacity:'+cs.opacity+' !important;');
-    });
-    var w=document.documentElement.clientWidth,hgt=window.innerHeight,k=Math.min((window.devicePixelRatio||1)*2,4);
-    var out=document.createElement('canvas');out.width=Math.round(w*k);out.height=Math.round(hgt*k);
-    var ctx=out.getContext('2d');ctx.fillStyle='#dfe6ec';ctx.fillRect(0,0,out.width,out.height);
-    var rect=mapEl?mapEl.getBoundingClientRect():null,tilesOk=false;
-    return loadLib().then(function(h2c){
-      return (rect?drawBaseTiles(ctx,rect,k):Promise.resolve(false)).then(function(ok){tilesOk=ok;return rect?drawMapShapes(ctx,mapEl,k):null;})
-      .then(function(){return new Promise(function(r){setTimeout(r,150)})})
-      .then(function(){
-        return h2c(document.body,{scale:k,useCORS:true,allowTaint:false,backgroundColor:null,
-          x:window.scrollX,y:window.scrollY,width:w,height:hgt,windowWidth:w,windowHeight:hgt,logging:false,
-          ignoreElements:function(el){return el===btn||el.id==='captureToast'||el.id==='captureGuide'||(el.tagName==='svg'&&mapEl&&mapEl.contains(el)&&!el.closest('.legend'))||(el.tagName==='CANVAS'&&mapEl&&mapEl.contains(el))},
-          onclone:function(doc){
-            var m=doc.getElementById('map'); if(!m) return;
-            var mr=m.getBoundingClientRect(),area=mr.width*mr.height;
-            m.style.setProperty('background','transparent','important');
-            /* 지도를 감싸는 상위 요소(body·main 등) 배경을 투명하게 → 아래 합성한 배경지도가 보이도록 */
-            for(var a=m.parentElement;a;a=a.parentElement){a.style.setProperty('background','transparent','important');}
-            var win=doc.defaultView||window;
-            Array.from(m.querySelectorAll('*')).forEach(function(el){
-              if(el.closest('.legend')) return;
-              var cs=win.getComputedStyle(el),r0=el.getBoundingClientRect();
-              /* 글자 없는 큰 판(지도 바탕판)은 투명 처리, 동 번호·시설 기호는 유지 */
-              if(r0.width>=120&&r0.height>=120&&!(el.textContent||'').trim()&&cs.backgroundColor!=='rgba(0, 0, 0, 0)') el.style.setProperty('background','transparent','important');
-            });
-            Array.from(m.querySelectorAll('*')).forEach(function(el){
-              if(el.closest('.legend')) return;
-              if(el.tagName==='IMG'&&!/^data:/.test(el.src||'')&&el.getBoundingClientRect().width>=200){el.style.setProperty('visibility','hidden','important');return;}
-              var r=el.getBoundingClientRect();
-              if(r.width*r.height>=area*0.5) el.style.setProperty('background','transparent','important');
-            });
-          }});
-      });
-    }).then(function(layer){
-      if(rect&&tilesOk) keyOutBackdrop(layer,rect,k);
-      ctx.drawImage(layer,0,0,out.width,out.height);
-      if(tilesOk&&rect){ /* 배경지도 출처 표기 */
-        var fs=10*k;ctx.font=fs+'px sans-serif';var t='\u00a9 OpenStreetMap',tw=ctx.measureText(t).width;
-        ctx.fillStyle='rgba(255,255,255,.8)';ctx.fillRect((rect.right)*k-tw-8*k,(rect.bottom)*k-fs-6*k,tw+6*k,fs+4*k);
-        ctx.fillStyle='#333';ctx.fillText(t,(rect.right)*k-tw-5*k,(rect.bottom)*k-5*k);
-      }
-      restore();return new Promise(function(r){out.toBlob(r,'image/png')});
-    },function(e){restore();throw e;});
-  }
-  function captureTab(){
+  function stamp(){var d=new Date(),z=function(n){return String(n).padStart(2,'0')};return d.getFullYear()+z(d.getMonth()+1)+z(d.getDate())+'_'+z(d.getHours())+z(d.getMinutes())+z(d.getSeconds());}
+  function captureDisplay(){
     return navigator.mediaDevices.getDisplayMedia({video:{displaySurface:'browser'},audio:false,preferCurrentTab:true,selfBrowserSurface:'include'}).then(function(stream){
       var v=document.createElement('video');v.muted=true;v.playsInline=true;v.srcObject=stream;
       return v.play().then(function(){return new Promise(function(r){setTimeout(r,350)})}).then(function(){
         var c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;
-        c.getContext('2d').drawImage(v,0,0);stream.getTracks().forEach(function(t){t.stop()});
+        c.getContext('2d').drawImage(v,0,0);
+        stream.getTracks().forEach(function(t){t.stop()});
         return new Promise(function(r){c.toBlob(r,'image/png')});
       });
+    }).then(function(blob){
+      if(!blob) throw new Error('empty');
+      var url=URL.createObjectURL(blob),a=document.createElement('a');
+      a.href=url;a.download='구리소방지도_'+stamp()+'.png';document.body.appendChild(a);a.click();a.remove();
+      setTimeout(function(){URL.revokeObjectURL(url)},4000);
     });
   }
-  function run(job){
-    if(busy) return; busy=true; toast('📸 저장 중...');
-    job().then(function(blob){if(!blob)throw new Error('empty');return save(blob);})
-      .then(function(){toast('✅ 저장 완료!',2000);})
-      .catch(function(e){
-        if(e&&(e.name==='NotAllowedError'||e.name==='AbortError')){hideToast();return;}
-        toast('❌ 캡처 실패. 스크린샷 기능을 이용해 주세요.',3500);
-      }).then(function(){busy=false;});
-  }
-  function bStyle(primary){return 'display:block;width:100%;min-height:46px;margin-top:8px;border-radius:12px;font-weight:800;font-size:15px;font-family:inherit;cursor:pointer;'+(primary?'border:0;background:#0c2c50;color:#fff':'border:1.5px solid #0c2c50;background:#fff;color:#0c2c50');}
-  function showMenu(){
-    if(document.getElementById('captureGuide')) return;
-    var bg=document.createElement('div');bg.id='captureGuide';
-    bg.setAttribute('style','position:fixed;inset:0;z-index:99999;background:rgba(7,26,50,.55);display:flex;align-items:center;justify-content:center;padding:16px');
-    var html='<div role="dialog" aria-modal="true" style="max-width:340px;width:100%;background:#fff;color:#0c2c50;border-radius:16px;padding:18px 16px 14px;box-shadow:0 12px 32px rgba(0,0,0,.3);text-align:center;font-size:14px;line-height:1.5">'
-      +'<div style="font-weight:800;font-size:17px;margin-bottom:6px">📷 화면 캡처</div>';
-    if(canTab) html+='<button type="button" data-act="tab" style="'+bStyle(true)+'">🖥 이 화면 그대로 저장 (권장)</button><div style="font-size:12px;color:#5b6b7d;margin-top:3px">선택창에서 \'이 탭\'을 고르세요</div>';
-    else html+='<div style="background:#f1f5f9;border-radius:12px;padding:10px 8px;margin-top:4px"><div style="font-weight:800;margin-bottom:4px">지도까지 선명하게 (권장)</div>'+shotGuide().map(function(s){return '<div>'+s+'</div>'}).join('')+'<button type="button" data-act="close" style="'+bStyle(true)+'">확인 · 창 닫고 직접 캡처</button></div>';
-    html+='<button type="button" data-act="page" style="'+bStyle(false)+'">📸 버튼 한 번에 이미지 저장</button><div style="font-size:12px;color:#5b6b7d;margin-top:3px">※ 배경지도는 오픈스트리트맵으로 표시됩니다</div>';
-    if(canTab) html+='<div style="font-size:12px;color:#5b6b7d;margin-top:8px">단축키: '+shotGuide()[0]+'</div>';
-    html+='<button type="button" data-act="close" style="margin-top:10px;border:0;background:none;color:#5b6b7d;font-size:13px;font-family:inherit;cursor:pointer">닫기</button></div>';
-    bg.innerHTML=html;document.body.appendChild(bg);
-    bg.addEventListener('click',function(e){
-      var b=e.target.closest('[data-act]');
-      if(e.target===bg||(b&&b.dataset.act==='close')){bg.remove();return;}
-      if(!b) return; bg.remove();
-      if(b.dataset.act==='page') run(capturePage);
-      else if(b.dataset.act==='tab') run(captureTab);
-    });
-  }
-  btn.addEventListener('click',showMenu);
+  btn.addEventListener('click',function(){
+    if(!isMobile&&navigator.mediaDevices&&navigator.mediaDevices.getDisplayMedia){
+      captureDisplay().catch(function(e){if(!(e&&(e.name==='NotAllowedError'||e.name==='AbortError')))showGuide();});
+    }else{
+      showGuide();
+    }
+  });
 })();
 </script>
 </body>
