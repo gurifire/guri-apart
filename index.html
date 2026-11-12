@@ -915,30 +915,112 @@
     bg.addEventListener('click',function(e){if(e.target===bg)close();});
   }
   function stamp(){var d=new Date(),z=function(n){return String(n).padStart(2,'0')};return d.getFullYear()+z(d.getMonth()+1)+z(d.getDate())+'_'+z(d.getHours())+z(d.getMinutes())+z(d.getSeconds());}
+  /* ── PC 고화질 저장: 지도를 1단계 확대해 4조각(2×2) 자동 촬영 후 이어붙임 (해상도 2배) ── */
+  function wait(ms){return new Promise(function(r){setTimeout(r,ms)})}
+  function getMap(){try{return (typeof map!=='undefined'&&map)?map:null}catch(e){return null}}
+  function isNaverMap(m){return !!(window.naver&&naver.maps&&m&&m instanceof naver.maps.Map)}
+  function waitIdle(m){
+    return new Promise(function(r){
+      var done=false;function fin(){if(!done){done=true;r();}}
+      try{
+        if(isNaverMap(m)) naver.maps.Event.once(m,'idle',fin);
+        else if(m&&m.once) m.once('idle',fin);
+      }catch(e){}
+      setTimeout(fin,3000);
+    }).then(function(){return wait(700)});
+  }
   function captureDisplay(){
-    /* 고화질: 실제 화면 해상도(배율 포함)로 요청 + 선명도 우선 + 화질 안정 후 저장 */
+    var m=getMap(),mapEl=document.getElementById('map');
     var dpr=window.devicePixelRatio||1;
     var tw=Math.round(window.innerWidth*dpr),th=Math.round(window.innerHeight*dpr);
+    var hidden=[],ctrlOpts=null,stream=null,orig=null,oldTitle=document.title;
+    function hideOverlays(){ /* 지도 위 범례·패널·조작버튼을 촬영 동안만 숨김 */
+      var list=[];
+      if(mapEl&&mapEl.parentElement) Array.from(mapEl.parentElement.children).forEach(function(c){if(c!==mapEl)list.push(c)});
+      if(mapEl) Array.from(mapEl.querySelectorAll('.maplibregl-control-container')).forEach(function(c){list.push(c)});
+      list.forEach(function(el){hidden.push({el:el,v:el.style.visibility});el.style.visibility='hidden';});
+      if(isNaverMap(m)){try{ctrlOpts={zoomControl:m.getOptions('zoomControl'),logoControl:m.getOptions('logoControl'),mapDataControl:m.getOptions('mapDataControl'),scaleControl:m.getOptions('scaleControl')};m.setOptions({zoomControl:false,logoControl:false,mapDataControl:false,scaleControl:false});}catch(e){ctrlOpts=null}}
+    }
+    function restoreAll(){
+      hidden.forEach(function(d){d.el.style.visibility=d.v});hidden=[];
+      if(ctrlOpts&&isNaverMap(m)){try{m.setOptions(ctrlOpts)}catch(e){}}ctrlOpts=null;
+      if(orig&&m){try{
+        if(isNaverMap(m)){m.setZoom(orig.z,false);m.setCenter(orig.c);}
+        else m.jumpTo({center:orig.c,zoom:orig.z});
+      }catch(e){}}
+      if(stream)stream.getTracks().forEach(function(t){t.stop()});
+      btn.style.visibility='';document.title=oldTitle;
+    }
     btn.style.visibility='hidden';
-    return navigator.mediaDevices.getDisplayMedia({video:{displaySurface:'browser',width:{ideal:Math.max(tw,1920),max:7680},height:{ideal:Math.max(th,1080),max:4320},frameRate:{ideal:5,max:15}},audio:false,preferCurrentTab:true,selfBrowserSurface:'include'}).then(function(stream){
-      var track=stream.getVideoTracks()[0];
+    return navigator.mediaDevices.getDisplayMedia({video:{displaySurface:'browser',width:{ideal:Math.max(tw,1920),max:7680},height:{ideal:Math.max(th,1080),max:4320},frameRate:{ideal:5,max:15}},audio:false,preferCurrentTab:true,selfBrowserSurface:'include'}).then(function(st){
+      stream=st;var track=st.getVideoTracks()[0];
       try{track.contentHint='detail';}catch(e){}
-      var v=document.createElement('video');v.muted=true;v.playsInline=true;v.srcObject=stream;
-      return v.play().then(function(){return new Promise(function(r){setTimeout(r,1200)})}).then(function(){
-        /* 화질이 올라온 최신 프레임 사용 */
-        var grab=(window.ImageCapture&&track.readyState==='live')?new ImageCapture(track).grabFrame().catch(function(){return null}):Promise.resolve(null);
-        return grab.then(function(bmp){
-          var src=bmp||v,w=bmp?bmp.width:v.videoWidth,hh=bmp?bmp.height:v.videoHeight;
-          var c=document.createElement('canvas');c.width=w;c.height=hh;
-          var ctx=c.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.drawImage(src,0,0);
-          stream.getTracks().forEach(function(t){t.stop()});
-          return new Promise(function(r){c.toBlob(r,'image/png')});
+      var v=document.createElement('video');v.muted=true;v.playsInline=true;v.srcObject=st;
+      function grab(){
+        var p=(window.ImageCapture&&track.readyState==='live')?new ImageCapture(track).grabFrame().catch(function(){return null}):Promise.resolve(null);
+        return p.then(function(b){
+          if(b) return b;
+          var c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;c.getContext('2d').drawImage(v,0,0);return c;
+        });
+      }
+      document.title='고화질 저장 중... (잠시 기다려 주세요)';
+      return v.play().then(function(){return wait(1200)}).then(grab).then(function(f0){
+        var fw=f0.width,fh=f0.height,s=fw/window.innerWidth;
+        var mr=mapEl?mapEl.getBoundingClientRect():null;
+        var leg=document.querySelector('main .legend'),lr=leg?leg.getBoundingClientRect():null;
+        var maxZ=21;try{maxZ=isNaverMap(m)?(m.getMaxZoom?m.getMaxZoom():21):(m.getMaxZoom?m.getMaxZoom():20);}catch(e){}
+        var z0=null;try{z0=m?m.getZoom():null}catch(e){}
+        /* 지도 확대가 불가하면 한 장 저장 */
+        if(!m||!mr||mr.width<50||z0===null||z0+1>maxZ){return f0;}
+        var W=mr.width,H=mr.height,K=2;
+        var out=document.createElement('canvas');out.width=Math.round(fw*K);out.height=Math.round(fh*K);
+        var ctx=out.getContext('2d');ctx.imageSmoothingQuality='high';
+        ctx.drawImage(f0,0,0,out.width,out.height); /* 제목줄 등 지도 밖 영역 */
+        orig={z:z0,c:m.getCenter()};
+        hideOverlays();
+        var Q=[[0,0],[1,0],[0,1],[1,1]];
+        if(isNaverMap(m)) m.setZoom(z0+1,false); else m.jumpTo({center:orig.c,zoom:z0+1});
+        return waitIdle(m).then(function(){
+          var targets;
+          if(isNaverMap(m)){
+            var proj=m.getProjection(),co=proj.fromCoordToOffset(orig.c);
+            targets=Q.map(function(q){return {q:q,c:proj.fromOffsetToCoord(new naver.maps.Point(co.x+q[0]*W-W/2,co.y+q[1]*H-H/2))}});
+          }else{
+            targets=Q.map(function(q){return {q:q,c:m.unproject([q[0]*W,q[1]*H])}});
+          }
+          var chain=Promise.resolve();
+          targets.forEach(function(t){
+            chain=chain.then(function(){
+              if(isNaverMap(m)) m.setCenter(t.c); else m.jumpTo({center:t.c});
+              return waitIdle(m);
+            }).then(grab).then(function(fr){
+              var ss=fr.width/window.innerWidth;
+              /* 조각을 결과 이미지의 지도 영역 해당 칸에 배치 (가로·세로 2배) */
+              ctx.drawImage(fr,mr.left*ss,mr.top*ss,W*ss,H*ss,
+                mr.left*s*K+t.q[0]*W*s*K/2, mr.top*s*K+t.q[1]*H*s*K/2, W*s*K/2, H*s*K/2);
+            });
+          });
+          return chain;
+        }).then(function(){
+          /* 범례를 원래 위치에 다시 합성 */
+          if(lr&&lr.width>0) ctx.drawImage(f0,lr.left*s,lr.top*s,lr.width*s,lr.height*s,lr.left*s*K,lr.top*s*K,lr.width*s*K,lr.height*s*K);
+          /* 지도 출처 표기 */
+          var txt=isNaverMap(m)?'© NAVER Corp.':'© OpenStreetMap',fs=Math.round(12*s*K);
+          ctx.font=fs+'px sans-serif';var tw2=ctx.measureText(txt).width,bx=(mr.right)*s*K-tw2-fs*0.8,by=(mr.bottom)*s*K-fs*0.5;
+          ctx.fillStyle='rgba(255,255,255,.85)';ctx.fillRect(bx-fs*0.3,by-fs,tw2+fs*0.6,fs*1.35);
+          ctx.fillStyle='#333';ctx.fillText(txt,bx,by);
+          return out;
         });
       });
-    }).then(function(blob){btn.style.visibility='';return blob;},function(e){btn.style.visibility='';throw e;}).then(function(blob){
+    }).then(function(img){
+      restoreAll();
+      var c=img;
+      if(!(c instanceof HTMLCanvasElement)){var t=document.createElement('canvas');t.width=c.width;t.height=c.height;t.getContext('2d').drawImage(c,0,0);c=t;}
+      return new Promise(function(r){c.toBlob(r,'image/png')});
+    },function(e){restoreAll();throw e;}).then(function(blob){
       if(!blob) throw new Error('empty');
       var url=URL.createObjectURL(blob),a=document.createElement('a');
-      a.href=url;a.download='구리소방지도_'+stamp()+'.png';document.body.appendChild(a);a.click();a.remove();
+      a.href=url;a.download='구리소방지도_고화질_'+stamp()+'.png';document.body.appendChild(a);a.click();a.remove();
       setTimeout(function(){URL.revokeObjectURL(url)},4000);
     });
   }
