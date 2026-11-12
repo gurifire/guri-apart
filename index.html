@@ -934,12 +934,18 @@
   function curtain(on,msg){
     var c=document.getElementById('captureCurtain');
     if(!c){c=document.createElement('div');c.id='captureCurtain';
-      c.setAttribute('style','position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2147483647;background:rgb('+CURTAIN_RGB.join(',')+');color:#fff;display:none;align-items:center;justify-content:center;flex-direction:column;gap:6px;padding:18px 26px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.35);font-family:inherit;text-align:center;min-width:240px;pointer-events:none');
+      c.setAttribute('style','position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2147483647;max-height:calc(100vh - 16px);box-sizing:border-box;background:rgb('+CURTAIN_RGB.join(',')+');color:#fff;display:none;align-items:center;justify-content:center;flex-direction:column;gap:6px;padding:18px 26px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.35);font-family:inherit;text-align:center;min-width:240px;pointer-events:none');
       c.innerHTML='<div id="captureCurtainMsg" style="font-size:17px;font-weight:800">📷</div><div style="font-size:12px;opacity:.8">잠시만 기다려 주세요</div>';
       document.body.appendChild(c);}
     if(msg!=null)document.getElementById('captureCurtainMsg').textContent=msg;
     c.style.display=on?'flex':'none';
-    if(on)c.__rect=c.getBoundingClientRect();
+    if(on){ /* 지도 위쪽(제목줄) 영역에 들어가면 그쪽에 표시 */
+      var mp=document.getElementById('map'),mt=mp?mp.getBoundingClientRect().top:0;
+      c.style.padding=mt>=56?'8px 22px':'18px 26px';
+      var bh=c.offsetHeight;
+      if(mt>=bh+4){c.style.top=Math.round(mt/2)+'px';}else{c.style.top='50%';}
+      c.__rect=c.getBoundingClientRect();
+    }
   }
   function removeCurtain(){var c=document.getElementById('captureCurtain');if(c)c.remove();}
   function captureDisplay(){
@@ -990,7 +996,9 @@
             if(Math.abs(d[0]-CURTAIN_RGB[0])<8&&Math.abs(d[1]-CURTAIN_RGB[1])<8&&Math.abs(d[2]-CURTAIN_RGB[2])<8)hit++;});
           return hit>=3;}catch(e){return false}
       }
-      function grabClean(mr2){ /* 가림막을 걷고 → 화면 반영 → 새 프레임 촬영 → 다시 가림막 */
+      function grabClean(mr2){ /* 안내 박스가 지도와 겹칠 때만 잠깐 숨기고 촬영 */
+        var bx=document.getElementById('captureCurtain'),br=bx&&bx.__rect;
+        if(!br||br.bottom<=mr2.top||br.top>=mr2.bottom||br.right<=mr2.left||br.left>=mr2.right) return grab();
         curtain(false);
         return new Promise(function(r){requestAnimationFrame(function(){requestAnimationFrame(r)})}).then(function(){
           var tries=0;
