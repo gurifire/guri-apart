@@ -888,33 +888,33 @@
 /* 화면 캡처 버튼 (독립 기능 - 기존 기능과 무관) */
 (function(){
   var btn=document.getElementById('screenCaptureBtn'); if(!btn) return;
-  var busy=false;
+  var ua=navigator.userAgent;
+  var isIOS=/iPhone|iPad|iPod/i.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  var isAndroid=/Android/i.test(ua);
+  var isMobile=isIOS||isAndroid||/Mobile/i.test(ua);
+  function guideText(){
+    if(isIOS) return {t:'아이폰 스크린샷 방법',l:['<b>측면 버튼 + 음량 높이기</b> 버튼을 동시에 눌렀다 떼기','(홈 버튼 모델: <b>홈 + 측면 버튼</b> 동시에)']};
+    if(isAndroid) return {t:'휴대폰 스크린샷 방법',l:['<b>전원 + 음량 낮추기</b> 버튼을 동시에 눌렀다 떼기','(갤럭시는 손날로 화면을 밀어도 캡처)']};
+    if(isMobile) return {t:'스크린샷 방법',l:['기기의 스크린샷 버튼 조합을 눌러 주세요']};
+    return {t:'PC 화면 캡처 방법',l:['<b>Windows + Shift + S</b> 를 눌러 영역을 선택하세요','(Mac: <b>Shift + Command + 4</b>)']};
+  }
+  function showGuide(){
+    if(document.getElementById('captureGuide')) return;
+    var g=guideText();
+    var bg=document.createElement('div'); bg.id='captureGuide';
+    bg.setAttribute('style','position:fixed;inset:0;z-index:99999;background:rgba(7,26,50,.55);display:flex;align-items:center;justify-content:center;padding:16px');
+    bg.innerHTML='<div role="dialog" aria-modal="true" style="max-width:340px;width:100%;background:#fff;color:#0c2c50;border-radius:16px;padding:20px 18px 16px;box-shadow:0 12px 32px rgba(0,0,0,.3);text-align:center;font-size:15px;line-height:1.55">'
+      +'<div style="font-size:30px;margin-bottom:4px">📷</div>'
+      +'<div style="font-weight:800;font-size:17px;margin-bottom:10px">'+g.t+'</div>'
+      +g.l.map(function(s){return '<div style="margin:3px 0">'+s+'</div>'}).join('')
+      +'<div style="margin-top:10px;color:#5b6b7d;font-size:13px">확인을 누르면 안내창이 닫힙니다.<br>닫힌 뒤 위 방법으로 캡처하세요.</div>'
+      +'<button type="button" id="captureGuideOk" style="margin-top:14px;width:100%;height:44px;border:0;border-radius:12px;background:#0c2c50;color:#fff;font-weight:800;font-size:15px">확인</button></div>';
+    document.body.appendChild(bg);
+    function close(){bg.remove();}
+    document.getElementById('captureGuideOk').addEventListener('click',close);
+    bg.addEventListener('click',function(e){if(e.target===bg)close();});
+  }
   function stamp(){var d=new Date(),z=function(n){return String(n).padStart(2,'0')};return d.getFullYear()+z(d.getMonth()+1)+z(d.getDate())+'_'+z(d.getHours())+z(d.getMinutes())+z(d.getSeconds());}
-  function isMobile(){return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);}
-  function save(blob){
-    var name='구리소방지도_'+stamp()+'.png';
-    try{
-      var file=new File([blob],name,{type:'image/png'});
-      if(isMobile()&&navigator.canShare&&navigator.canShare({files:[file]})){
-        return navigator.share({files:[file],title:'화면 캡처'}).catch(function(e){if(e&&e.name!=='AbortError')download(blob,name);});
-      }
-    }catch(e){}
-    download(blob,name);
-  }
-  function download(blob,name){
-    var url=URL.createObjectURL(blob),a=document.createElement('a');
-    a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
-    setTimeout(function(){URL.revokeObjectURL(url)},4000);
-  }
-  function loadLib(){
-    if(window.html2canvas) return Promise.resolve(window.html2canvas);
-    return new Promise(function(res,rej){
-      var s=document.createElement('script');
-      s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-      var t=setTimeout(function(){rej(new Error('timeout'))},15000);s.onload=function(){clearTimeout(t);res(window.html2canvas)};s.onerror=function(){clearTimeout(t);rej(new Error('lib'))};
-      document.head.appendChild(s);
-    });
-  }
   function captureDisplay(){
     return navigator.mediaDevices.getDisplayMedia({video:{displaySurface:'browser'},audio:false,preferCurrentTab:true,selfBrowserSurface:'include'}).then(function(stream){
       var v=document.createElement('video');v.muted=true;v.playsInline=true;v.srcObject=stream;
@@ -924,24 +924,19 @@
         stream.getTracks().forEach(function(t){t.stop()});
         return new Promise(function(r){c.toBlob(r,'image/png')});
       });
+    }).then(function(blob){
+      if(!blob) throw new Error('empty');
+      var url=URL.createObjectURL(blob),a=document.createElement('a');
+      a.href=url;a.download='구리소방지도_'+stamp()+'.png';document.body.appendChild(a);a.click();a.remove();
+      setTimeout(function(){URL.revokeObjectURL(url)},4000);
     });
   }
-  function capturePage(){
-    return loadLib().then(function(h2c){
-      var w=window.innerWidth,hgt=window.innerHeight;
-      return h2c(document.body,{useCORS:true,allowTaint:false,backgroundColor:'#dfe6ec',
-        x:window.scrollX,y:window.scrollY,width:w,height:hgt,windowWidth:w,windowHeight:hgt,
-        scale:Math.min(window.devicePixelRatio||1,2),logging:false,
-        ignoreElements:function(el){return el===btn}});
-    }).then(function(c){return new Promise(function(r){c.toBlob(r,'image/png')})});
-  }
   btn.addEventListener('click',function(){
-    if(busy) return; busy=true; var label=btn.textContent; btn.textContent='⏳';
-    var useDisplay=!isMobile()&&navigator.mediaDevices&&navigator.mediaDevices.getDisplayMedia;
-    var job=useDisplay?captureDisplay().catch(function(e){if(e&&e.name==='NotAllowedError')throw e;return capturePage();}):capturePage();
-    job.then(function(blob){if(!blob)throw new Error('empty');return save(blob);})
-      .catch(function(e){if(!(e&&(e.name==='NotAllowedError'||e.name==='AbortError')))alert('화면 캡처에 실패했습니다. 기기의 스크린샷 기능을 이용해 주세요.');})
-      .then(function(){busy=false;btn.textContent=label;});
+    if(!isMobile&&navigator.mediaDevices&&navigator.mediaDevices.getDisplayMedia){
+      captureDisplay().catch(function(e){if(!(e&&(e.name==='NotAllowedError'||e.name==='AbortError')))showGuide();});
+    }else{
+      showGuide();
+    }
   });
 })();
 </script>
