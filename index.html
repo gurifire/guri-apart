@@ -84,7 +84,7 @@
     .shape-editor{position:relative;width:100%;background:rgba(255,255,255,.98);border:1px solid #ccd7e5;border-radius:10px;overflow:hidden}.shape-editor-toggle{width:100%;min-height:40px;border:0;background:#344968;color:#fff;padding:10px 12px;font-size:.8rem;font-weight:800;text-align:left;display:flex;align-items:center;justify-content:space-between}.shape-editor-toggle::after{content:'＋'}.shape-editor.open .shape-editor-toggle::after{content:'−'}.shape-editor-body{display:none;padding:10px}.shape-editor.open .shape-editor-body{display:block}.shape-help{margin:0 0 8px;color:#526178;font-size:.68rem;line-height:1.4}.shape-tools{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.shape-tools button,.shape-actions button{min-height:32px;border:1px solid #cbd6e4;border-radius:7px;background:#fff;color:#263a56;font-size:.67rem;font-weight:750;padding:5px}.shape-tools button.active{background:#203a60;color:#fff;border-color:#203a60}.shape-color-row{display:grid;grid-template-columns:auto 44px 1fr;align-items:center;gap:7px;margin:8px 0}.shape-color-row label{font-size:.68rem;font-weight:750}.shape-color-row input[type=color]{width:44px;height:32px;padding:2px;border:1px solid #bdc9d8;border-radius:7px;background:#fff}.shape-color-row button{height:32px;border:1px solid #bdc9d8;border-radius:7px;background:#fff;font-size:.67rem;font-weight:750}.shape-angle-row{display:grid;grid-template-columns:auto 1fr 50px;align-items:center;gap:6px;margin:0 0 8px;padding:7px;border:1px solid #d7e0eb;border-radius:8px;background:#f8fafc}.shape-angle-row label{font-size:.68rem;font-weight:800;color:#33455e}.shape-angle-row input{width:100%;height:31px;border:1px solid #bdc9d8;border-radius:7px;padding:4px 6px;text-align:right;font-size:.7rem}.shape-angle-row button{height:31px;border:1px solid #1677d2;border-radius:7px;background:#1677d2;color:#fff;font-size:.67rem;font-weight:800}.shape-angle-row input:disabled,.shape-angle-row button:disabled{opacity:.42;cursor:not-allowed}.shape-rotate-line{stroke:#1677d2;stroke-width:2;pointer-events:none}.shape-rotate-handle{fill:#fff;stroke:#1677d2;stroke-width:3;cursor:grab;pointer-events:all}.shape-rotate-handle:active{cursor:grabbing}.shape-actions{display:grid;grid-template-columns:1fr 1fr;gap:5px}.shape-status{margin-top:7px;padding:6px 7px;border-radius:7px;background:#eef3f9;color:#33455e;font-size:.64rem;line-height:1.35}.shape-overlay{position:absolute;inset:0;width:100%;height:100%;z-index:545;pointer-events:none}.shape-overlay.editing{pointer-events:auto;touch-action:none}.shape-building{cursor:pointer;pointer-events:all}.shape-building.selected{filter:drop-shadow(0 0 3px #1677d2)}.shape-handle{fill:#fff;stroke:#1677d2;stroke-width:2;cursor:move;pointer-events:all}.shape-preview{fill:none;stroke:#1677d2;stroke-width:2;stroke-dasharray:6 4;pointer-events:none}@media(max-width:720px){.shape-editor-toggle{min-height:36px;padding:8px 10px;font-size:.72rem}.shape-editor-body{padding:8px}}
   </style>
 <!-- 홈 화면 아이콘 -->
-<link rel="manifest" href="app.webmanifest?v=2">
+<link rel="manifest" href="app.webmanifest?v=3">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192-v2.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon-v2.png">
 <meta name="apple-mobile-web-app-title" content="구리시 공동주택 소방시설지도">
@@ -1104,5 +1104,27 @@
 </script>
 <!-- 앱 관제 오비트 이용자 카운터 (개인정보 없음, 실패해도 앱 동작 영향 없음) -->
 <script async src="https://gurifire.github.io/orbit/track.js"></script>
+<!-- ICON-NOTICE-START (홈 화면 새 아이콘 안내 · 2026-11-28까지 · 이후 이 블록 통째로 삭제) -->
+<script>
+(function(){try{
+  var KEY='guriIconNotice2', END=Date.parse('2026-11-28T23:59:59+09:00');
+  var ls=window.localStorage;
+  if(/[?&]from=icon2(&|$)/.test(location.search)){ls.setItem(KEY,'new');return;}
+  if(Date.now()>END||ls.getItem(KEY))return;
+  var mobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  if(!mobile)return;
+  function show(){
+    var d=document.createElement('div');
+    d.id='iconNotice2';
+    d.setAttribute('role','status');
+    d.style.cssText='position:fixed;left:10px;right:10px;top:calc(env(safe-area-inset-top,0px) + 10px);z-index:2147483000;background:#10243b;color:#fff;border:1px solid #d4a64a;border-radius:12px;padding:12px 14px;box-shadow:0 8px 24px rgba(0,0,0,.35);font-size:14px;line-height:1.55;display:flex;gap:10px;align-items:flex-start;max-width:560px;margin:0 auto';
+    d.innerHTML='<div style="flex:1">📌 <b>홈화면 아이콘이 새로 바뀌었습니다.</b><br>홈화면 아이콘으로 쓰시는 분은 기존 아이콘을 지우고, 크롬 메뉴(⋮) → <b>홈 화면에 추가</b>로 다시 추가해 주세요.</div><button type="button" style="flex:0 0 auto;min-height:40px;padding:0 14px;border:0;border-radius:8px;background:#d4a64a;color:#10243b;font-weight:800;font-size:14px;cursor:pointer">확인</button>';
+    d.querySelector('button').onclick=function(){try{ls.setItem(KEY,'ok');}catch(e){}d.remove();};
+    document.body.appendChild(d);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',show);else show();
+}catch(e){}})();
+</script>
+<!-- ICON-NOTICE-END -->
 </body>
 </html>

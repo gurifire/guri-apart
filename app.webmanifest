@@ -1,7 +1,7 @@
 {
   "name": "구리시 공동주택 소방시설지도",
   "short_name": "구리시 공동주택 소방시설지도",
-  "start_url": "./",
+  "start_url": "./?from=icon2",
   "scope": "./",
   "display": "browser",
   "background_color": "#10243b",
