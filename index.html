@@ -588,7 +588,95 @@
 
     function matchesApartment(apt,query){
       const q=query.trim().toLowerCase();
-      return [apt.name,apt.address,apt.roadAddress,apt.dong].filter(Boolean).join(' ').toLowerCase().includes(q);
+      return [apt.name,apt.address,apt.roadAddress,apt.dong].filter(Boolean).join(' ').toLowerCase().includes(q)
+        || searchCorrectionMatch(apt,query); /* 기존 방식으로 못 찾으면 검색 보정으로 추가 */
+    }
+    /* ── 검색 보정 (띄어쓰기·한글 숫자·'아파트' 생략·영문 표기·비슷한 발음) ──
+       기존 검색 결과는 그대로 두고, 보정 판정은 정확한 단계부터 적용
+       1단계: 붙여 쓴 전체 일치 → 2단계: 단어별 모두 포함 → 3단계: 비슷한 발음·오타 */
+    function searchFixFoldVowels(text){ /* 발음이 거의 같은 모음 통일: ㅔ→ㅐ, ㅖ→ㅒ, ㅚ·ㅞ→ㅙ */
+      let out='';
+      for(const ch of text){
+        const c=ch.charCodeAt(0)-0xAC00;
+        if(c<0||c>11171){out+=ch;continue;}
+        const cho=Math.floor(c/588);let jung=Math.floor((c%588)/28);const jong=c%28;
+        jung=jung===5?1:jung===7?3:(jung===11||jung===15)?10:jung;
+        out+=String.fromCharCode(0xAC00+(cho*21+jung)*28+jong);
+      }
+      return out;
+    }
+    function searchFixNormalize(text){
+      let t=String(text||'').toLowerCase().replace(/[\s·\-_.,()\/\[\]]+/g,'');
+      t=t.replace(/아파트|apt/g,'');
+      t=t.replace(/lig/g,'엘아이지').replace(/lg/g,'엘지').replace(/sk/g,'에스케이').replace(/lh/g,'엘에이치')
+         .replace(/e편한/g,'이편한').replace(/샾/g,'샵').replace(/제(?=\d+(차|단지))/g,'');
+      const num={'일':1,'이':2,'삼':3,'사':4,'오':5,'육':6,'륙':6,'칠':7,'팔':8,'구':9,'십':10};
+      t=t.replace(/(십[일이삼사오육칠팔구]?|[일이삼사오육륙칠팔구])(?=차|단지)/g,m=>m.length===2?String(10+num[m[1]]):String(num[m]));
+      return searchFixFoldVowels(t);
+    }
+    function searchFixJamo(text){
+      const CHO='ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ',JUNG='ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ',JONG=' ㄱㄲㄳㄴㄵㄶㄷㄹㄺㄻㄼㄽㄾㄿㅀㅁㅂㅄㅅㅆㅇㅈㅊㅋㅌㅍㅎ';
+      let out='';
+      for(const ch of text){
+        const c=ch.charCodeAt(0)-0xAC00;
+        if(c<0||c>11171){out+=ch;continue;}
+        out+=CHO[Math.floor(c/588)]+JUNG[Math.floor((c%588)/28)]+(c%28?JONG[c%28]:'');
+      }
+      return out;
+    }
+    function searchFixHaystack(apt){
+      const raw=[apt.name,apt.naverName,apt.address,apt.roadAddress,apt.dong].filter(Boolean).join(' ');
+      const store=searchFixHaystack.cache||(searchFixHaystack.cache=new Map()); /* 선언 순서와 무관하게 동작 */
+      let cached=store.get(apt.id);
+      if(!cached||cached.raw!==raw){
+        cached={raw,norm:searchFixNormalize(raw),nameJamo:searchFixJamo(searchFixNormalize(apt.name))};
+        store.set(apt.id,cached);
+      }
+      return cached;
+    }
+    function searchFixFuzzy(hay,query){
+      const q=searchFixJamo(searchFixNormalize(query));
+      const allowed=Math.min(2,Math.floor(q.length/6));
+      if(!allowed)return false;
+      const s=hay.nameJamo; /* 단지명 안에서 가장 비슷한 구간과 비교 */
+      let prev=[];for(let i=0;i<=q.length;i++)prev[i]=i;
+      let best=prev[q.length];
+      for(let j=1;j<=s.length;j++){
+        const cur=[0];
+        for(let i=1;i<=q.length;i++)cur[i]=Math.min(prev[i]+1,cur[i-1]+1,prev[i-1]+(q[i-1]===s[j-1]?0:1));
+        best=Math.min(best,cur[q.length]);prev=cur;
+      }
+      return best<=allowed;
+    }
+    function searchFixLevel(apt,query){ /* 0: 불일치, 1~3: 일치 단계 */
+      const hay=searchFixHaystack(apt),whole=searchFixNormalize(query);
+      if(!whole)return 0;
+      if(hay.norm.includes(whole))return 1;
+      const tokens=String(query).trim().split(/\s+/).map(searchFixNormalize).filter(Boolean);
+      if(tokens.length>1&&tokens.every(t=>hay.norm.includes(t)))return 2;
+      return searchFixFuzzy(hay,query)?3:0;
+    }
+    function searchCorrectionMatch(apt,query){
+      try{return searchCorrectionMatchCore(apt,query);}catch(e){return false;} /* 보정 오류 시 기존 검색만 사용 */
+    }
+    function searchCorrectionMatchCore(apt,query){
+      const levelStore=searchCorrectionMatchCore.cache||(searchCorrectionMatchCore.cache=new Map());
+      const key=String(query||'').trim().toLowerCase();
+      /* 한 글자 입력(타이핑 도중)·숫자만 입력(번지 검색)은 기존 방식 그대로 */
+      if(searchFixNormalize(key).length<2||/^[\d\s\-]+$/.test(key))return false;
+      let best=levelStore.get(key);
+      if(best===undefined){ /* 전체 단지 중 가장 정확한 일치 단계 (기존 방식 일치는 1단계로 간주) */
+        best=0;
+        for(const a of apartments){
+          const original=[a.name,a.address,a.roadAddress,a.dong].filter(Boolean).join(' ').toLowerCase().includes(key);
+          const lv=original?1:searchFixLevel(a,key);
+          if(lv&&(!best||lv<best))best=lv;
+          if(best===1)break;
+        }
+        if(levelStore.size>200)levelStore.clear();
+        levelStore.set(key,best);
+      }
+      return best>0&&searchFixLevel(apt,key)===best;
     }
 
     function renderList(query=''){
